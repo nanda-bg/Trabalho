@@ -1,4 +1,3 @@
-from animal import Animal
 from pessoa import Pessoa
 
 

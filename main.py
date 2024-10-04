@@ -1,11 +1,8 @@
 from cachorro import Cachorro
-from doação import Doacao
+from controladorPessoa import ControladorPessoa
 from gato import Gato
-from adotante import Adotante
-from doador import Doador
 from ong import ONG
 from vacina import Vacina
-from adoção import Adocao
 
 def main():
     # Criando a ONG
@@ -20,13 +17,13 @@ def main():
     cachorro1 = Cachorro(chip=12345, nome="Rex", raca="Labrador", porte="grande")
     ong.adicionar_vacina(cachorro1, vacina1)
     ong.adicionar_vacina(cachorro1, vacina2)
-
+    print(cachorro1)
     print("Vacinas cachorro 1: ", cachorro1.vacinas.__str__())
     print("Tem todas as vacinas básicas? ", cachorro1.tem_vacinas_basicas())
     
     gato1 = Gato(chip=67890, nome="Miau", raca="Siamês")
     ong.adicionar_vacina(gato1, vacina3)
-
+    print(gato1)
     print("Vacinas gato 1: ", gato1.vacinas.__str__())
     print("Tem todas as vacinas básicas? ", gato1.tem_vacinas_basicas())
     print()
@@ -39,10 +36,12 @@ def main():
     print()
 
     # Criando doador
-    doador = Doador(cpf=12345678901, nome="João", data_nascimento="1980-05-15", endereco="Rua A, 123")
-
+    cp = ControladorPessoa()
+    doador = cp.incluir_doador(cpf=10542543974, nome="João", data_nascimento="1980-05-15", endereco="Rua A, 123")
+    print(doador)
     # O doador doa um animal
-    doacao = Doacao(ong, cachorro1, doador, "Animal não pode mais ser cuidado")
+    doacao = ong.doar(cachorro1, doador, "Animal não pode mais ser cuidado")
+    print(doacao)
     print("Doações: ", ong.doacoes)
     print()
 
@@ -53,11 +52,16 @@ def main():
     print()
 
     # Criando adotante
-    adotante = Adotante(cpf=10987654321, nome="Maria", data_nascimento="2000-03-10", endereco="Rua B, 456", 
+    adotante = cp.incluir_adotante(cpf=81815434244, nome="Maria", data_nascimento="2000-03-10", endereco="Rua B, 456", 
                         tipo_habitacao="casa", tamanho_habitacao="grande", possui_animais=False)
     
+    print(adotante)
+
     # Criando adoção
-    adocao = Adocao(ong=ong, animal=cachorro1, adotante=adotante)
+    print("Animal da ONG:", ong.todos_animais[0])
+    print("Cachorro1: ", cachorro1)
+    adocao = ong.adotar(adotante, cachorro1)
+    print(adocao)
     print()
     print()
 
@@ -66,9 +70,11 @@ def main():
     print("Vacinas cachorro 1: ", cachorro1.vacinas)
     print("Tem todas as vacinas básicas? ", cachorro1.tem_vacinas_basicas())
     print()
+    print("Animais:", ong.listar_animais)
+    print("Animais Disponíveis:", ong.listar_animais_disponiveis)
     print()
 
-    adocao2 = Adocao(ong=ong, animal=cachorro1, adotante=adotante)
+    adocao2 = ong.adotar(adotante, cachorro1)
 
     print("Adoções: ", ong.adocoes)
     print("Animais da Ong: ", ong.todos_animais)

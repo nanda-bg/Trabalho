@@ -4,15 +4,6 @@ from vacina import Vacina
 
 class Animal(ABC):
     def __init__(self, chip: int, nome: str, raca: str, vacinas = None):
-        if not isinstance(chip, int):
-            raise ValueError('O chip deve ser um número inteiro.')
-
-        if not isinstance(nome, str):
-            raise ValueError('O nome deve ser uma string.')
-        
-        if not isinstance(raca, str):
-            raise ValueError('A raça deve ser uma string.')
-        
         self.__vacinas = []
 
         if vacinas:
