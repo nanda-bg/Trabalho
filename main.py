@@ -1,8 +1,8 @@
-from cachorro import Cachorro
-from controladorPessoa import ControladorPessoa
-from gato import Gato
-from ong import ONG
-from vacina import Vacina
+from entidade.cachorro import Cachorro
+from controlador.controlador_pessoa import ControladorPessoa
+from entidade.gato import Gato
+from controlador.ong import ONG
+from entidade.vacina import Vacina
 
 def main():
     # Criando a ONG

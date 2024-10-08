@@ -1,5 +1,5 @@
 from abc import ABC
-from vacina import Vacina
+from entidade.vacina import Vacina
 
 
 class Animal(ABC):

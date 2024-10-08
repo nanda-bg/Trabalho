@@ -1,4 +1,4 @@
-from pessoa import Pessoa
+from entidade.pessoa import Pessoa
 
 class Adotante(Pessoa):
     def __init__(self, cpf, nome, data_nascimento, endereco, tipo_habitacao, tamanho_habitacao, possui_animais):

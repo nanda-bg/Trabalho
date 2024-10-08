@@ -1,11 +1,11 @@
 from datetime import date
-from adotante import Adotante
-from adoção import Adocao
-from animal import Animal
-from cachorro import Cachorro
-from doador import Doador
-from doação import Doacao
-from vacina import Vacina
+from entidade.adotante import Adotante
+from entidade.adoção import Adocao
+from entidade.animal import Animal
+from entidade.cachorro import Cachorro
+from entidade.doador import Doador
+from entidade.doação import Doacao
+from entidade.vacina import Vacina
 
 
 class ONG:
