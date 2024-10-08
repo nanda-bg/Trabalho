@@ -9,7 +9,7 @@ class ControladorPessoa():
         self.__adotantes = []
         self.__doadores = []
         self.__tela_pessoa = TelaPessoa()
-        self.__controloador_sistema = controlador_sistema
+        self.__controlador_sistema = controlador_sistema
 
     @property
     def adotantes(self):
@@ -26,12 +26,38 @@ class ControladorPessoa():
         data_nascimento = dados_doador["data_nascimento"]
         endereco = dados_doador["endereco"]
 
-        if self.verificacoes_basicas(cpf, nome, data_nascimento, endereco):
-            doador = Doador(cpf, nome, data_nascimento, endereco)
+        if not self.validar_cpf(cpf):
+            self.__tela_pessoa.mostra_mensagem("CPF inválido")
+            return
+        
+        if self.buscar_pessoa(cpf) != None:
+            if isinstance(self.buscar_pessoa(cpf), Adotante):
+                self.__tela_pessoa.mostra_mensagem("CPF já cadastrado para um adotante")
+                self.__tela_pessoa.mostra_mensagem("Doadores não podem ser adotantes, portanto ao alterar o cadastro para doador você não poderá mais adotar animais")
+                alterar = input("Deseja alterar o cadastro para doador? (s/n) ")
 
-            self.__doadores.append(doador)
+                if alterar == 's':
+                    self.__adotantes.remove(self.buscar_pessoa(cpf))
 
-            return doador
+                    doador = Doador(cpf, nome, data_nascimento, endereco)
+                    self.__doadores.append(doador)
+
+                    self.__tela_pessoa.mostra_mensagem("Cadastro alterado com sucesso")
+
+                    return doador
+
+                return
+
+            self.__tela_pessoa.mostra_mensagem("Doador já cadastrado")
+            return
+        
+        doador = Doador(cpf, nome, data_nascimento, endereco)
+
+        self.__doadores.append(doador)
+
+        self.__tela_pessoa.mostra_mensagem("Doador cadastrado com sucesso")
+
+        return doador
 
     def incluir_adotante(self):
         dados_adotante = self.__tela_pessoa.pega_dados_adotante()
@@ -43,46 +69,51 @@ class ControladorPessoa():
         tamanho_habitacao = dados_adotante["tamanho_habitacao"]
         possui_animais = dados_adotante["possui_animais"]
 
+        if not self.validar_cpf(cpf):
+            self.__tela_pessoa.mostra_mensagem("CPF inválido")
+            return
+        
         if self.buscar_pessoa(cpf) != None:
-            self.__tela_pessoa.mostra_mensagem("Pessoa já cadastrada")
-            return
-            
-        if not isinstance(tipo_habitacao, str):
-            self.__tela_pessoa.mostra_mensagem('O tipo de habitação deve ser uma string')
-            return
-            
-        if not isinstance(tamanho_habitacao, str):
-            self.__tela_pessoa.mostra_mensagem('O tamanho da habitação deve ser uma string')
-            return
-            
-        if not isinstance(possui_animais, bool):
-            self.__tela_pessoa.mostra_mensagem('O campo possui animais deve ser um booleano')
+            if isinstance(self.buscar_pessoa(cpf), Doador):
+                self.__tela_pessoa.mostra_mensagem("CPF já cadastrado para um doador, portanto não pode ser de um adotante")
+
+            self.__tela_pessoa.mostra_mensagem("CPF já cadastrado para um adotante")
             return
             
         if not self.validar_idade(data_nascimento):
             self.__tela_pessoa.mostra_mensagem("O adotante precisa ser maior de 18 anos")
             return
-                    
-        if self.verificacoes_basicas(cpf, nome, data_nascimento, endereco):
-            adotante = Adotante(cpf, nome, data_nascimento, endereco, tipo_habitacao, tamanho_habitacao, possui_animais)
-            self.__adotantes.append(adotante)
 
-            return adotante
+        adotante = Adotante(cpf, nome, data_nascimento, endereco, tipo_habitacao, tamanho_habitacao, possui_animais)
+        self.__adotantes.append(adotante)
+
+        self.__tela_pessoa.mostra_mensagem("Adotante cadastrado com sucesso")
+
+        return adotante
 
     def listar_doadores(self):
+        if len(self.__doadores) == 0:
+            self.__tela_pessoa.mostra_mensagem("Nenhum doador cadastrado")
+            return
+        
         for doador in self.__doadores:
             self.__tela_pessoa.mostra_pessoa(doador)
 
         return self.__doadores
     
     def listar_adotantes(self):
+        if len(self.__adotantes) == 0:
+            self.__tela_pessoa.mostra_mensagem("Nenhum adotante cadastrado")
+            return
+        
         for adotante in self.__adotantes:
             self.__tela_pessoa.mostra_pessoa(adotante)
 
         return self.__adotantes
 
-    def buscar_pessoa(self):
-        cpf = self.__tela_pessoa.seleciona_pessoa()
+    def buscar_pessoa(self, cpf = None):
+        if cpf == None:
+            cpf = self.__tela_pessoa.seleciona_pessoa()
 
         pessoas = self.__adotantes + self.__doadores
 
@@ -102,63 +133,38 @@ class ControladorPessoa():
         # Retorna se a pessoa é maior de idade
         return idade >= 18    
 
-    def verificacoes_basicas(self, cpf, nome, data_nascimento, endereco):
-        if not isinstance(cpf, str):
-            self.__tela_pessoa.mostra_mensagem('O CPF deve ser uma string')
+    def validar_cpf(self, cpf):
+        # Limpa o cpf para deixar apenas os números
+        cpf = cpf.replace('.', '').replace('-', '')
+
+        # Verifica se o CPF tem 11 dígitos
+        if len(cpf) != 11 or not cpf.isdigit():
             return False
-        
-        if not self.validar_cpf(cpf):
-            self.__tela_pessoa.mostra_mensagem('CPF inválido')
+
+        # Verifica se todos os dígitos são iguais
+        if len(set(cpf)) == 1:
             return False
-        
-        if not isinstance(nome, str):
-            self.__tela_pessoa.mostra_mensagem('O nome deve ser uma string')
+
+        # Calcula o primeiro dígito verificador
+        soma = sum(int(cpf[i]) * (10 - i) for i in range(9))
+        resto = soma % 11
+        digito_1 = 0 if resto < 2 else 11 - resto
+
+        # Verifica o primeiro dígito verificador
+        if int(cpf[9]) != digito_1:
             return False
-        
-        if not isinstance(data_nascimento, str):
-            self.__tela_pessoa.mostra_mensagem('A data de nascimento deve ser uma string')
-            return False
-        
-        if not isinstance(endereco, str):
-            self.__tela_pessoa.mostra_mensagem('O endereço deve ser uma string')
+
+        # Calcula o segundo dígito verificador
+        soma = sum(int(cpf[i]) * (11 - i) for i in range(10))
+        resto = soma % 11
+        digito_2 = 0 if resto < 2 else 11 - resto
+
+        # Verifica o segundo dígito verificador
+        if int(cpf[10]) != digito_2:
             return False
         
         return True
-    
 
-    def validar_cpf(self, cpf):
-        cpf = cpf.replace('.','')
-        cpf = cpf.replace('-', '')
-
-        conjunto = set(list(cpf))
-
-        if len(conjunto) > 1:
-            multiplicador = len(cpf)-1
-            parada = multiplicador-1
-            comparador = -2
-            valido = True
-
-            while comparador < 0 and valido:
-                i = 0
-                soma = 0
-                while i < parada:
-                    soma += int(cpf[i]) * multiplicador
-                    multiplicador -= 1
-                    i += 1
-                    
-                resto = soma%11
-
-                if  (resto <= 9 and int(cpf[comparador]) == 11-resto) or (resto > 9 and int(cpf[comparador]) == 0):
-                    multiplicador = len(cpf)
-                    parada = multiplicador-1
-                    comparador += 1
-                else:
-                    valido = False
-        
-        else:
-            valido = False
-        
-        return valido
 
     def abrir_tela(self):
         lista_opcoes = {1: self.incluir_doador, 2: self.incluir_adotante, 3: self.listar_doadores, 
@@ -170,4 +176,4 @@ class ControladorPessoa():
             funcao_escolhida()
 
     def retornar(self):
-        self.__controloador_sistema.abrir_tela_inicial()
+        self.__controlador_sistema.abrir_tela_inicial()
