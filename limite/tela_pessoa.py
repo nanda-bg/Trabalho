@@ -25,7 +25,7 @@ class TelaPessoa(AbstractTela):
 
         print()
 
-        return self.le_numero_inteiro("Escolha uma opção: ")
+        return self.le_numero_inteiro("Escolha uma opção: ", [1, 2, 3, 4, 5, 0])
 
     def pega_dados_doador(self):
         print("-------- DADOS DOADOR ----------")

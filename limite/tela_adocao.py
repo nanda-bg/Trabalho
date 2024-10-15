@@ -21,7 +21,7 @@ class TelaAdocao(AbstractTela):
 
         print()
 
-        return self.le_numero_inteiro("Escolha uma opção: ")
+        return self.le_numero_inteiro("Escolha uma opção: ", [1, 2, 3, 0])
     
     def mostrar_mensagem(self, msg):
         print(msg)

@@ -15,4 +15,4 @@ class TelaSistema(AbstractTela):
         print("4 - Ir para tela de Doação")
         print("0 - Finalizar sistema")
 
-        return self.le_numero_inteiro("Escolha uma opção: ")
+        return self.le_numero_inteiro("Escolha uma opção: ", [1, 2, 3, 4, 0])
