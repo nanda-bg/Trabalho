@@ -1,8 +1,15 @@
 from datetime import datetime
+from exception.chipInvalidoException import ChipInvalidoException
+from exception.cpfInvalidoException import CPFInvalidoException
+from exception.dataFinalInvalidaException import DataFinalInvalida
+from limite.abstract_tela import AbstractTela
 import re
 
 
-class TelaAdocao():
+class TelaAdocao(AbstractTela):
+    def __init__(self):
+        super().__init__()
+
     def tela_opcoes(self):
         print()
         print("-------- TELA ADOCAO ---------")
@@ -11,10 +18,10 @@ class TelaAdocao():
         print("2 - Emitir relatório de adoções")
         print("3 - Assinar termo de adoção")
         print("0 - Voltar")
-        opcao = int(input("Escolha a opcao:"))
+
         print()
 
-        return opcao
+        return self.le_numero_inteiro("Escolha uma opção: ")
     
     def mostrar_mensagem(self, msg):
         print(msg)
@@ -52,10 +59,13 @@ class TelaAdocao():
                 if fim > inicio:
                     break
                 
-                print("A data de fim deve ser maior que a data de início. Tente novamente.")
+                raise DataFinalInvalida()
 
             except ValueError:
                 self.mostrar_mensagem("A data deve estar no formato aaaa-mm-dd. Tente novamente.")
+
+            except DataFinalInvalida as e:
+                self.mostrar_mensagem(e)    
         
         return {"inicio": inicio, "fim": fim}
     
@@ -66,29 +76,36 @@ class TelaAdocao():
 
     def valida_cpf(self):
         while True:
-            cpf = input("CPF: ")
+            try:
+                cpf = input("CPF: ")
 
-            # Verifica se o CPF tem apenas números (11 dígitos)
-            if re.match(r'^\d{11}$', cpf):
-                # Formata o CPF para NNN.NNN.NNN-NN
-                cpf_formatado = f"{cpf[:3]}.{cpf[3:6]}.{cpf[6:9]}-{cpf[9:]}"
-                return cpf_formatado
-            
-            # Verifica se o CPF já está no formato NNN.NNN.NNN-NN
-            elif re.match(r'^\d{3}\.\d{3}\.\d{3}-\d{2}$', cpf):
-                return cpf
-            
-            else:
-                print("CPF inválido. Insira no formato NNNNNNNNNNN ou NNN.NNN.NNN-NN.")        
+                # Verifica se o CPF tem apenas números (11 dígitos)
+                if re.match(r'^\d{11}$', cpf):
+                    # Formata o CPF para NNN.NNN.NNN-NN
+                    cpf_formatado = f"{cpf[:3]}.{cpf[3:6]}.{cpf[6:9]}-{cpf[9:]}"
+                    return cpf_formatado
+                
+                # Verifica se o CPF já está no formato NNN.NNN.NNN-NN
+                elif re.match(r'^\d{3}\.\d{3}\.\d{3}-\d{2}$', cpf):
+                    return cpf
+                
+                else:
+                    raise CPFInvalidoException()
+
+            except CPFInvalidoException as e:
+                self.mostrar_mensagem(e)       
 
     def valida_chip(self):
         while True:
-            chip = input("Chip do animal (7 dígitos): ")
+            try:
+                chip = input("Chip do animal (7 dígitos): ")
 
-            # Verifica se o chip tem apenas números (7 dígitos)
-            if re.match(r'^\d{7}$', chip):
+                # Verifica se o chip tem apenas números (7 dígitos)
+                if not re.match(r'^\d{7}$', chip):
+                    raise ChipInvalidoException()
+                
                 return chip
             
-            else:
-                print("Chip inválido. Insira 7 dígitos númericos.")    
+            except ChipInvalidoException as e:
+                self.mostrar_mensagem(e)  
                                

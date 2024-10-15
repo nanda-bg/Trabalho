@@ -1,5 +1,12 @@
-class TelaSistema:
+from limite.abstract_tela import AbstractTela
+
+
+class TelaSistema(AbstractTela):
+    def __init__(self):
+        super().__init__()
+
     def tela_opcoes(self):
+        print()
         print("-------- TELA SISTEMA ---------")
         print("Escolha uma opcao")
         print("1 - Ir para tela de Pessoas")
@@ -8,6 +15,4 @@ class TelaSistema:
         print("4 - Ir para tela de Doação")
         print("0 - Finalizar sistema")
 
-        opcao = int(input("Escolha a opcao:"))
-
-        return opcao
+        return self.le_numero_inteiro("Escolha uma opção: ")
