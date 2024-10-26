@@ -26,7 +26,7 @@ class TelaVacina(AbstractTela):
         chip_animal = self.valida_chip()
 
 
-        return {"chip_animal": chip_animal, "vacina_escolhida": vacina_escolhida}
+        return {"chip_animal": chip_animal}
     
     
 
