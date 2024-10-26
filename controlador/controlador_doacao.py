@@ -35,7 +35,7 @@ class ControladorDoacao():
 
         doacoes = [doacao for doacao in self.__doacoes if inicio <= doacao.data <= fim]
         if len(doacoes) == 0:
-            self.__tela_doacao.mostrar_mensagem("Nenhuma adoção realizada nesse período")
+            self.__tela_doacao.mostrar_mensagem("Nenhuma doação realizada nesse período")
             return
         
         self.__tela_doacao.mostrar_mensagem("-------- Relátorio ---------")
