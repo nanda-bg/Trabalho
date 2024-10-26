@@ -24,7 +24,6 @@ class TelaVacina(AbstractTela):
     def pega_dados_vacina():
         print("-------- DADOS VACINA ----------")
         chip_animal = self.valida_chip()
-        vacina_escolhida = lista_opcoes[vacina_escolhida]
 
 
         return {"chip_animal": chip_animal, "vacina_escolhida": vacina_escolhida}
