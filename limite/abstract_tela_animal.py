@@ -6,6 +6,7 @@ from exception.chipInvalidoException import ChipInvalidoException
 from exception.nomeInvalidoException import NomeInvalidoException
 from exception.raca_invalida_exception import RacaInvalidaException
 from exception.vacina_invalida_exception import VacinaInvalidaException
+from limite.tela_vacina import TelaVacina
 
 class AbstractTelaAnimal(ABC):
     def __init__(self):
@@ -28,8 +29,8 @@ class AbstractTelaAnimal(ABC):
     def valida_nome_animal(self):
         while True:
             try:
-                nome = input("Nome: ")
-                if len(nome.strip()) < 3:
+                nome = input("Nome do animal: ")
+                if len(nome.strip()) < 2:
                     raise NomeInvalidoException()
                 
                 return nome
@@ -54,7 +55,15 @@ class AbstractTelaAnimal(ABC):
     def valida_vacinas(self):
         while True:
             try:
-                vacinas = input("Vacinas do animal (separadas por vírgula): ").split(',')
+                tem_vacina = input("O animal já foi vacinado?(s/n) ")
+                if tem_vacina != "s" and tem_vacina != "n":
+                    print("Insira um valor válido. (s/n)")
+                elif tem_vacina == "n":
+                    vacinas = []
+                elif tem_vacina == "s":
+                    tela_vacina = TelaVacina()
+                    tela_vacina.tela_opcoes()
+
                 for vacina in vacinas:
                     if not isinstance(vacina, Vacina):
                         raise VacinaInvalidaException   
