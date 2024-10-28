@@ -42,8 +42,8 @@ class ControladorAnimal:
         
         if not isinstance(animal, Animal):
             raise ValueError('animal deve ser um objeto da classe Animal')
-        
-        animal.nova_vacina(vacina)
+       
+        animal.vacinas.append(vacina)
 
         if animal.tem_vacinas_basicas() and animal not in self.animais_disponiveis:
             self.animais_disponiveis.append(animal)

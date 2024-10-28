@@ -1,7 +1,8 @@
 from limite.abstract_tela import AbstractTela
+from limite.tela_animal import AbstractTelaAnimal
 
 
-class TelaVacina(AbstractTela):
+class TelaVacina(AbstractTela, AbstractTelaAnimal):
     def __init__(self):
         super().__init__()
 
@@ -21,7 +22,7 @@ class TelaVacina(AbstractTela):
 
         return self.le_numero_inteiro("Escolha uma opção: ", [1, 2, 3, 4, 5, 6, 0])
     
-    def pega_dados_vacina():
+    def pega_dados_vacina(self):
         print("-------- DADOS VACINA ----------")
         chip_animal = self.valida_chip()
 

@@ -1,7 +1,8 @@
 from limite.abstract_tela import AbstractTela
+from limite.abstract_tela_pessoa import AbstractTelaPessoa
 
 
-class TelaPessoa(AbstractTela):
+class TelaPessoa(AbstractTela, AbstractTelaPessoa):
     def __init__(self):
         super().__init__()
 

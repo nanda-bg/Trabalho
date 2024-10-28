@@ -30,7 +30,10 @@ class SistemaPessoas():
     @property
     def controlador_vacina(self):
         return self.__controlador_vacina
-
+    
+    @property
+    def controlador_doacao(self):
+        return self.__controlador_doacao
 
     def inicializa_sistema(self):
         self.abrir_tela_inicial()
@@ -47,14 +50,14 @@ class SistemaPessoas():
     def ir_para_doacao(self):
         self.__controlador_doacao.abrir_tela()    
 
-    def ir_para_vacina(self):
+    def ir_para_vacinas(self):
         self.__controlador_vacina.abrir_tela()
 
     def encerra_sistema(self):
         exit(0)
 
     def abrir_tela_inicial(self):
-        lista_opcoes = {1: self.ir_para_pessoas, 2: self.ir_para_animais, 3: self.ir_para_adocao, 4: self.ir_para_doacao, 5: self.ir_para_vacina, 0: self.encerra_sistema}
+        lista_opcoes = {1: self.ir_para_pessoas, 2: self.ir_para_animais, 3: self.ir_para_adocao, 4: self.ir_para_doacao, 5: self.ir_para_vacinas, 0: self.encerra_sistema}
 
         while True:
             opcao_escolhida = self.__tela_sistema.tela_opcoes()

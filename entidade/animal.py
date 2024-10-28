@@ -53,6 +53,13 @@ class Animal(ABC):
     @property
     def vacinas(self):
         return self.__vacinas
+    
+    @vacinas.setter
+    def vacinas(self, vacina: Vacina):
+        if not isinstance(vacina, Vacina):
+            raise ValueError('A vacina deve ser um objeto da classe Vacina.')
+        
+        self.__vacinas.append(vacina)
 
 
     def nova_vacina(self, vacina):
