@@ -1,5 +1,5 @@
 from limite.abstract_tela import AbstractTela
-from limite.tela_animal import AbstractTelaAnimal
+from limite.abstract_tela_animal import AbstractTelaAnimal
 
 
 class TelaVacina(AbstractTela, AbstractTelaAnimal):

@@ -6,7 +6,7 @@ from exception.chipInvalidoException import ChipInvalidoException
 from exception.nomeInvalidoException import NomeInvalidoException
 from exception.raca_invalida_exception import RacaInvalidaException
 from exception.vacina_invalida_exception import VacinaInvalidaException
-from limite.tela_vacina import TelaVacina
+# from limite.tela_vacina import TelaVacina
 
 class AbstractTelaAnimal(ABC):
     def __init__(self):
@@ -52,23 +52,23 @@ class AbstractTelaAnimal(ABC):
             except RacaInvalidaException as e:
                 self.mostrar_mensagem(e)    
                    
-    def valida_vacinas(self):
-        while True:
-            try:
-                tem_vacina = input("O animal já foi vacinado?(s/n) ")
-                if tem_vacina != "s" and tem_vacina != "n":
-                    print("Insira um valor válido. (s/n)")
-                elif tem_vacina == "n":
-                    vacinas = []
-                elif tem_vacina == "s":
-                    tela_vacina = TelaVacina()
-                    tela_vacina.tela_opcoes()
+    # def valida_vacinas(self):
+    #     while True:
+    #         try:
+    #             tem_vacina = input("O animal já foi vacinado?(s/n) ")
+    #             if tem_vacina != "s" and tem_vacina != "n":
+    #                 print("Insira um valor válido. (s/n)")
+    #             elif tem_vacina == "n":
+    #                 vacinas = []
+    #             elif tem_vacina == "s":
+    #                 # tela_vacina = TelaVacina()
+    #                 # tela_vacina.tela_opcoes()
 
-                for vacina in vacinas:
-                    if not isinstance(vacina, Vacina):
-                        raise VacinaInvalidaException   
+    #             for vacina in vacinas:
+    #                 if not isinstance(vacina, Vacina):
+    #                     raise VacinaInvalidaException   
                           
-                return vacinas
+    #             return vacinas
             
-            except VacinaInvalidaException as e:
-                self.mostrar_mensagem(e)                                             
+            # except VacinaInvalidaException as e:
+            #     self.mostrar_mensagem(e)                                             
