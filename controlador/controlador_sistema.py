@@ -36,11 +36,7 @@ class SistemaPessoas:
         return self.__controlador_doacao
 
     def inicializa_sistema(self):
-        try:
-            self.abrir_tela_inicial()
-        except Exception as e:
-            self.__tela_sistema.mostrar_mensagem(e)
-            self.inicializa_sistema()
+        self.abrir_tela_inicial()
 
     def ir_para_pessoas(self):
         self.__controlador_pessoa.abrir_tela()

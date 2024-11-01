@@ -64,7 +64,7 @@ class ControladorAnimal:
             return
         
         for animal in self.todos_animais:
-            self.__tela_animal.mostrar_mensagem(animal)
+            self.__tela_animal.mostra_mensagem(animal)
     
     def listar_animais_disponiveis(self):
         if len(self.todos_animais) < 1:
@@ -72,7 +72,7 @@ class ControladorAnimal:
             return
         
         for animal in self.animais_disponiveis:
-            self.__tela_animal.mostrar_mensagem(animal)
+            self.__tela_animal.mostra_mensagem(animal)
 
     def abrir_tela(self):
         lista_opcoes = {1: self.listar_animais, 2: self.listar_animais_disponiveis, 3: self.buscar_animal, 

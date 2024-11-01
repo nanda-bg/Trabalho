@@ -37,6 +37,7 @@ class TelaDoacao(
         raca_animal = self.valida_raca_animal()
 
         vacinas_animal = self.valida_vacinas()
+        print(vacinas_animal)
 
         motivo_doacao = self.valida_motivo_doacao()
 

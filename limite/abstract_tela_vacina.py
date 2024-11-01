@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 import re
 
+from controlador import controlador_animal
 from entidade.vacina import Vacina
 from exception.chipInvalidoException import ChipInvalidoException
 from exception.nomeInvalidoException import NomeInvalidoException
@@ -15,7 +16,6 @@ class AbstractTelaVacina(ABC):
         super().__init__()
 
     def incluir_vacina(self):
-        # add dicionario de vacinas
         vacinas = {
             1: Vacina("raiva"),
             2: Vacina("leptospirose"),
@@ -50,10 +50,10 @@ class AbstractTelaVacina(ABC):
                 elif tem_vacina == "n":
                     vacinas = []
                 elif tem_vacina == "s":
-                    # looping to add multiple vacinas
                     while True:
                         vacina = self.incluir_vacina()
                         vacinas.append(vacina)
+                    
                         if (
                             self.le_numero_inteiro(
                                 "Deseja adicionar mais uma vacina? (1 - Sim, 0 - Não): ",
