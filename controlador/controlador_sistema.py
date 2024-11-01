@@ -5,7 +5,8 @@ from controlador.controlador_pessoa import ControladorPessoa
 from controlador.controlador_vacina import ControladorVacina
 from limite.tela_sistema import TelaSistema
 
-class SistemaPessoas():
+
+class SistemaPessoas:
     def __init__(self):
         self.__controlador_pessoa = ControladorPessoa(self)
         self.__controlador_adocao = ControladorAdocao(self)
@@ -14,29 +15,32 @@ class SistemaPessoas():
         self.__controlador_vacina = ControladorVacina(self)
         self.__tela_sistema = TelaSistema()
 
-
     @property
     def controlador_pessoa(self):
         return self.__controlador_pessoa
-    
+
     @property
     def controlador_animal(self):
         return self.__controlador_animal
-    
+
     @property
     def controlador_adocao(self):
         return self.__controlador_adocao
-    
+
     @property
     def controlador_vacina(self):
         return self.__controlador_vacina
-    
+
     @property
     def controlador_doacao(self):
         return self.__controlador_doacao
 
     def inicializa_sistema(self):
-        self.abrir_tela_inicial()
+        try:
+            self.abrir_tela_inicial()
+        except Exception as e:
+            self.__tela_sistema.mostrar_mensagem(e)
+            self.inicializa_sistema()
 
     def ir_para_pessoas(self):
         self.__controlador_pessoa.abrir_tela()
@@ -48,7 +52,7 @@ class SistemaPessoas():
         self.__controlador_adocao.abrir_tela()
 
     def ir_para_doacao(self):
-        self.__controlador_doacao.abrir_tela()    
+        self.__controlador_doacao.abrir_tela()
 
     def ir_para_vacinas(self):
         self.__controlador_vacina.abrir_tela()
@@ -57,7 +61,14 @@ class SistemaPessoas():
         exit(0)
 
     def abrir_tela_inicial(self):
-        lista_opcoes = {1: self.ir_para_pessoas, 2: self.ir_para_animais, 3: self.ir_para_adocao, 4: self.ir_para_doacao, 5: self.ir_para_vacinas, 0: self.encerra_sistema}
+        lista_opcoes = {
+            1: self.ir_para_pessoas,
+            2: self.ir_para_animais,
+            3: self.ir_para_adocao,
+            4: self.ir_para_doacao,
+            5: self.ir_para_vacinas,
+            0: self.encerra_sistema,
+        }
 
         while True:
             opcao_escolhida = self.__tela_sistema.tela_opcoes()

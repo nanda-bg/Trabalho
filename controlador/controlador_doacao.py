@@ -1,15 +1,15 @@
-from entidade.doação import Doacao
+from entidade.doacao import Doacao
 from limite.tela_doacao import TelaDoacao
 
 
-class ControladorDoacao():
+class ControladorDoacao:
     def __init__(self, controlador_sistema):
         self.__doacoes = []
         self.__tela_doacao = TelaDoacao()
         self.__controlador_sistema = controlador_sistema
         self.__controlador_pessoa = controlador_sistema.controlador_pessoa
         self.__controlador_animal = controlador_sistema.controlador_animal
-        
+
     def doar(self):
         dados_doacao = self.__tela_doacao.pega_dados_doacao()
         doador = self.__controlador_pessoa.buscar_pessoa(dados_doacao["cpf_doador"])
@@ -26,7 +26,7 @@ class ControladorDoacao():
         doacao = Doacao(animal, doador, motivo_doacao)
         self.__doacoes.append(doacao)
         return doacao
-    
+
     def emitir_relatorio_doacoes(self):
         datas = self.__tela_doacao.pega_datas_relatorio()
 
@@ -35,9 +35,11 @@ class ControladorDoacao():
 
         doacoes = [doacao for doacao in self.__doacoes if inicio <= doacao.data <= fim]
         if len(doacoes) == 0:
-            self.__tela_doacao.mostrar_mensagem("Nenhuma doação realizada nesse período")
+            self.__tela_doacao.mostrar_mensagem(
+                "Nenhuma doação realizada nesse período"
+            )
             return
-        
+
         self.__tela_doacao.mostrar_mensagem("-------- Relátorio ---------")
         for doacao in doacoes:
             self.__tela_doacao.mostra_doacao(doacao)
@@ -51,10 +53,14 @@ class ControladorDoacao():
         print(f"Nome do animal: {doacao.animal.nome}")
         print(f"Chip do animal: {doacao.animal.chip}")
 
-        print(f"Data da Doação: {doacao.data}")    
+        print(f"Data da Doação: {doacao.data}")
 
     def abrir_tela(self):
-        lista_opcoes = {1: self.doar, 2: self.emitir_relatorio_doacoes, 0: self.retornar}
+        lista_opcoes = {
+            1: self.doar,
+            2: self.emitir_relatorio_doacoes,
+            0: self.retornar,
+        }
 
         while True:
             opcao_escolhida = self.__tela_doacao.tela_opcoes()
