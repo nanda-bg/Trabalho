@@ -9,7 +9,7 @@ class TelaVacina(AbstractTela, AbstractTelaAnimal):
     def tela_opcoes(self):
         print()
         print("-------- TELA VACINAS ----------")
-        print("Escolha uma opção")
+        print("Escolha uma opção:")
         print("1 - Incluir vacina de raiva")
         print("2 - Incluir vacina de leptospirose")
         print("3 - Incluir vacina de hepatite infecciosa")
@@ -25,7 +25,6 @@ class TelaVacina(AbstractTela, AbstractTelaAnimal):
     def pega_dados_vacina(self):
         print("-------- DADOS VACINA ----------")
         chip_animal = self.valida_chip()
-
 
         return {"chip_animal": chip_animal}
     

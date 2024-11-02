@@ -55,7 +55,8 @@ class ControladorPessoa():
 
         self.__doadores.append(doador)
 
-        self.__tela_pessoa.mostrar_mensagem("Doador cadastrado com sucesso")
+        print()
+        self.__tela_pessoa.mostrar_mensagem("Doador cadastrado com sucesso.")
 
         return doador
 

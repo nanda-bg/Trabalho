@@ -9,7 +9,7 @@ class TelaPessoa(AbstractTela, AbstractTelaPessoa):
     def tela_opcoes(self):
         print()
         print("-------- TELA PESSOAS ----------")
-        print("Escolha uma opção")
+        print("Escolha uma opção:")
         print("1 - Incluir Doador")
         print("2 - Incluir Adotante")
         print("3 - Listar Doadores")

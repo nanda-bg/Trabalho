@@ -13,8 +13,8 @@ class TelaAdocao(AbstractTela, AbstractTelaPessoa, AbstractTelaAnimal, AbstractT
 
     def tela_opcoes(self):
         print()
-        print("-------- TELA ADOCAO ---------")
-        print("Escolha uma opcao")
+        print("-------- TELA ADOÇÃO ---------")
+        print("Escolha uma opção:")
         print("1 - Adotar")
         print("2 - Emitir relatório de adoções")
         print("3 - Assinar termo de adoção")
@@ -34,10 +34,10 @@ class TelaAdocao(AbstractTela, AbstractTelaPessoa, AbstractTelaAnimal, AbstractT
         print(f"Nome do animal: {adocao.animal.nome}")
         print(f"Chip do animal: {adocao.animal.chip}")
 
-        print(f"Data da Adoção: {adocao.data}")    
+        print(f"Data da adoção: {adocao.data}")    
 
     def pega_dados_adocao(self):
-        print("-------- DADOS ADOCAO ----------")
+        print("-------- DADOS ADOÇÃO ----------")
         
         cpf_adotante = self.valida_cpf()
         chip_animal = self.valida_chip()

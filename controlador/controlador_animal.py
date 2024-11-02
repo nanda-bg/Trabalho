@@ -45,13 +45,16 @@ class ControladorAnimal:
             
             self.__controlador_sistema.controlador_vacina.abrir_tela()
 
-        self.__tela_vacina.mostrar_mensagem(f"Vacina {vacina} selecionada")
-       
-        animal.vacinas.append(vacina)
-        self.__tela_animal.mostrar_animal(animal)
+        if vacina in animal.vacinas:
+            print("O animal já possui a vacina selecionada.")
+        else:
+            print()
+            self.__tela_vacina.mostrar_mensagem(f"{vacina} selecionada.")
+        
+            animal.vacinas.append(vacina)
 
         if animal.tem_vacinas_basicas() and animal not in self.animais_disponiveis:
-            self.animais_disponiveis.append(animal)
+                self.animais_disponiveis.append(animal)
         
     def tem_vacinas_basicas(self, animal):
         vacinas_basicas = ['raiva', 'leptospirose', 'hepatite infecciosa']

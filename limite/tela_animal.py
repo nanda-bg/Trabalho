@@ -9,7 +9,7 @@ class TelaAnimal(AbstractTela, AbstractTelaAnimal):
     def tela_opcoes(self):
         print()
         print("-------- TELA ANIMAIS ----------")
-        print("Escolha uma opção")
+        print("Escolha uma opção:")
         print("1 - Listar todos os animais")
         print("2 - Listar animais disponíveis para adoção")
         print("3 - Buscar animal por chip")

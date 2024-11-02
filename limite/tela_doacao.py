@@ -18,8 +18,8 @@ class TelaDoacao(
 
     def tela_opcoes(self):
         print()
-        print("-------- TELA DOACAO ---------")
-        print("Escolha uma opcao")
+        print("-------- TELA DOAÇÃO ---------")
+        print("Escolha uma opção:")
         print("1 - Doar")
         print("2 - Emitir relatório de doações")
         print("0 - Voltar")
@@ -29,7 +29,7 @@ class TelaDoacao(
         return self.le_numero_inteiro("Escolha uma opção: ", [1, 2, 0])
 
     def pega_dados_doacao(self):
-        print("-------- DADOS DOACAO ----------")
+        print("-------- DADOS DOAÇÃO ----------")
 
         cpf_doador = self.valida_cpf()
         nome_animal = self.valida_nome_animal()
@@ -37,7 +37,6 @@ class TelaDoacao(
         raca_animal = self.valida_raca_animal()
 
         vacinas_animal = self.valida_vacinas()
-        print(vacinas_animal)
 
         motivo_doacao = self.valida_motivo_doacao()
 
@@ -72,5 +71,5 @@ class TelaDoacao(
         print(f"Nome do animal: {doacao.animal.nome}")
         print(f"Chip do animal: {doacao.animal.chip}")
 
-        print(f"Data da Adoção: {doacao.data}")    
+        print(f"Data da doação: {doacao.data}")    
     
