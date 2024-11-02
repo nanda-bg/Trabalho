@@ -36,6 +36,7 @@ class ControladorVacina:
                 vacina = vac
                 break
 
+        print()    
         dados = self.__tela_vacina.pega_dados_vacina()
         chip_animal = dados["chip_animal"]
         animal = self.__controlador_sistema.controlador_animal.buscar_animal(chip_animal)

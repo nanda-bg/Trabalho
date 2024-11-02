@@ -20,6 +20,7 @@ class ControladorPessoa():
         return self.__doadores
     
     def incluir_doador(self):
+        print()
         dados_doador = self.__tela_pessoa.pega_dados_doador()
         cpf = dados_doador["cpf"]
         nome = dados_doador["nome"]
@@ -61,6 +62,7 @@ class ControladorPessoa():
         return doador
 
     def incluir_adotante(self):
+        print()
         dados_adotante = self.__tela_pessoa.pega_dados_adotante()
         cpf = dados_adotante["cpf"]
         nome = dados_adotante["nome"]

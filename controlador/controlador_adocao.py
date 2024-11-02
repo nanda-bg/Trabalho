@@ -13,6 +13,7 @@ class ControladorAdocao:
         self.__controlador_sistema = controlador_sistema
 
     def emitir_relatorio_adocoes(self):
+        print()
         datas = self.__tela_adocao.pega_datas_relatorio()
         formato_data = "%Y-%m-%d"
 
@@ -27,6 +28,7 @@ class ControladorAdocao:
             )
             return
 
+        print()
         self.__tela_adocao.mostrar_mensagem("-------- Relátorio ---------")
         for adocao in adocoes:
             self.__tela_adocao.mostrar_adocao(adocao)
@@ -47,6 +49,7 @@ class ControladorAdocao:
         return True
 
     def adotar(self):
+        print()
         dados_adocao = self.__tela_adocao.pega_dados_adocao()
 
         cpf = dados_adocao["cpf_adotante"]
@@ -126,6 +129,7 @@ class ControladorAdocao:
                 self.__tela_adocao.mostrar_mensagem("Adoção não encontrada")
                 return
 
+        print()
         self.__tela_adocao.mostrar_mensagem(
             f"Eu, {adocao.adotante.nome}, portador do CPF {adocao.adotante.cpf},"
         )
@@ -138,6 +142,7 @@ class ControladorAdocao:
         )
         print()
         assinar = input("Você concorda com o termo acima? (s/n) ")
+        print()
 
         if assinar == "s":
             adocao.termo_assinado = True

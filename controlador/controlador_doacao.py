@@ -12,6 +12,7 @@ class ControladorDoacao:
         self.__controlador_animal = controlador_sistema.controlador_animal
 
     def doar(self):
+        print()
         dados_doacao = self.__tela_doacao.pega_dados_doacao()
         doador = self.__controlador_pessoa.buscar_pessoa(dados_doacao["cpf_doador"])
 
@@ -33,6 +34,7 @@ class ControladorDoacao:
         return doacao
 
     def emitir_relatorio_doacoes(self):
+        print()
         datas = self.__tela_doacao.pega_datas_relatorio()
 
         formato_data = "%Y-%m-%d"
