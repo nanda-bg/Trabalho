@@ -27,7 +27,7 @@ class TelaAdocao(AbstractTela, AbstractTelaPessoa, AbstractTelaAnimal, AbstractT
     def mostrar_mensagem(self, msg):
         print(msg)
 
-    def mostra_adocao(self, adocao):
+    def mostrar_adocao(self, adocao):
         print(f"Nome do adotante: {adocao.adotante.nome}")
         print(f"CPF do adotante: {adocao.adotante.cpf}")
 

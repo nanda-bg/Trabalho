@@ -1,14 +1,7 @@
-from abc import ABC, abstractmethod
-import re
+from abc import ABC
 
-from controlador import controlador_animal
 from entidade.vacina import Vacina
-from exception.chipInvalidoException import ChipInvalidoException
-from exception.nomeInvalidoException import NomeInvalidoException
-from exception.raca_invalida_exception import RacaInvalidaException
 from exception.vacina_invalida_exception import VacinaInvalidaException
-
-# from limite.tela_vacina import TelaVacina
 
 
 class AbstractTelaVacina(ABC):
@@ -33,7 +26,6 @@ class AbstractTelaVacina(ABC):
         print("4 - Incluir vacina de cinomose")
         print("5 - Incluir vacina de parvovirose")
         print("6 - Incluir vacina de coronavirose")
-        print("0 - Retornar")
 
         print()
 

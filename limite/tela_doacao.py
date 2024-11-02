@@ -60,7 +60,17 @@ class TelaDoacao(
                 return motivo_doacao
 
             except MotivoInvalidoException as e:
-                self.mostra_mensagem(e)
+                self.mostrar_mensagem(e)
 
     def mostrar_mensagem(self, msg):
         print(msg)
+        
+    def mostrar_doacao(self, doacao):
+        print(f"Nome do doador: {doacao.doador.nome}")
+        print(f"CPF do doador: {doacao.doador.cpf}")
+
+        print(f"Nome do animal: {doacao.animal.nome}")
+        print(f"Chip do animal: {doacao.animal.chip}")
+
+        print(f"Data da Adoção: {doacao.data}")    
+    

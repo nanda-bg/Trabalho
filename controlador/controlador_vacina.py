@@ -8,6 +8,7 @@ class ControladorVacina:
         self.__tela_vacina = TelaVacina()
         self.__vacinas = []
 
+        self.vacinas_disponiveis()
 
     def vacinas_disponiveis(self):
         vacinas = ['raiva', 'leptospirose', 'hepatite infecciosa', 'cinomose', 'parvovirose', 'coronavirose']
@@ -30,7 +31,13 @@ class ControladorVacina:
                 
 
     def add_vacina(self, vacina):
-        chip_animal = self.__tela_vacina.pega_dados_vacina()
+        for vac in self.__vacinas:
+            if vac.nome == vacina:
+                vacina = vac
+                break
+
+        dados = self.__tela_vacina.pega_dados_vacina()
+        chip_animal = dados["chip_animal"]
         animal = self.__controlador_sistema.controlador_animal.buscar_animal(chip_animal)
         self.__controlador_sistema.controlador_animal.adicionar_vacina(animal, vacina)
 

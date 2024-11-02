@@ -1,6 +1,7 @@
 from entidade.animal import Animal
 from entidade.vacina import Vacina
 from limite.tela_animal import TelaAnimal
+from limite.tela_vacina import TelaVacina
 
 
 class ControladorAnimal:
@@ -8,6 +9,7 @@ class ControladorAnimal:
         self.todos_animais = []
         self.animais_disponiveis = []
         self.__tela_animal = TelaAnimal()
+        self.__tela_vacina = TelaVacina()
         self.__controlador_sistema = controlador_sistema
 
     def adicionar_animal(self, chip = None, nome = None, raca = None, vacinas = None):
@@ -36,14 +38,17 @@ class ControladorAnimal:
         if animal in self.animais_disponiveis:
             self.animais_disponiveis.remove(animal)
 
-    def adicionar_vacina(self, animal, vacina: Vacina):
-        if not isinstance(vacina, Vacina):
-            raise ValueError('A vacina deve ser um objeto da classe Vacina.')
-        
-        if not isinstance(animal, Animal):
-            raise ValueError('animal deve ser um objeto da classe Animal')
+    def adicionar_vacina(self, animal = None, vacina = None):
+        if animal == None:
+            opcoes = {1: "raiva", 2: "leptospirose", 3: "hepatite infecciosa", 
+                        4: "cinomose", 5: "parvovirose", 6: "coronavirose"}
+            
+            self.__controlador_sistema.controlador_vacina.abrir_tela()
+
+        self.__tela_vacina.mostrar_mensagem(f"Vacina {vacina} selecionada")
        
         animal.vacinas.append(vacina)
+        self.__tela_animal.mostrar_animal(animal)
 
         if animal.tem_vacinas_basicas() and animal not in self.animais_disponiveis:
             self.animais_disponiveis.append(animal)
@@ -60,19 +65,19 @@ class ControladorAnimal:
 
     def listar_animais(self):
         if len(self.todos_animais) < 1:
-            print("Nenhum animal")
+            self.__tela_animal.mostrar_mensagem("Nenhum animal")
             return
         
         for animal in self.todos_animais:
-            self.__tela_animal.mostra_mensagem(animal)
+            self.__tela_animal.mostrar_mensagem(animal)
     
     def listar_animais_disponiveis(self):
         if len(self.todos_animais) < 1:
-            print("Nenhum animal")
+            self.__tela_animal.mostrar_mensagem("Nenhum animal")
             return
         
         for animal in self.animais_disponiveis:
-            self.__tela_animal.mostra_mensagem(animal)
+            self.__tela_animal.mostrar_mensagem(animal)
 
     def abrir_tela(self):
         lista_opcoes = {1: self.listar_animais, 2: self.listar_animais_disponiveis, 3: self.buscar_animal, 
@@ -92,33 +97,12 @@ class ControladorAnimal:
 
     def buscar_animal(self, chip = None):
         if chip == None:
-            chip = self.__tela_animal.seleciona_animal() 
+            chip = self.seleciona_animal() 
 
         animais = self.todos_animais
 
         for animal in animais:
             if animal.chip == chip:
-                self.__tela_animal.mostra_animal(animal)
+                self.__tela_animal.mostrar_animal(animal)
                 return animal
         return None  
-
-
-
-
-
-# REGRAS:
-# NÃO PODE TER 2 ANIMAIS COM O MSM CHIP
-# TEM Q TER AS 3 VACINAS BASICAS (RAIVA, LEPTOSPIROSE, HEPATITE INFECCIOSA) PARA PODER SER ADOTADO
-
-
-# VAI PRECISAR DE UM MÉTODO DE "BUSCAR ANIMAL" PRA PODER ADOTAR, DE PREFERENCIA PELO CHIP
-
-# Tenta fazer 2 listas no init, uma com todos os animais ou só com os que não tem as vacinas basicas, 
-# e outra com os que já podem ser adotados
-
-
-# FAZER PRIMEIRO SÓ COM AS VACINAS NORMAL, 
-# DEPOIS QUE ESTIVER TUDO PRONTO, SE DER TEMPO,
-# TENTAR FAZER A PARTE DE ADD O DIA DA VACINAÇÃO (FORA DO OBJETO VACINA)
-# POSSIVELMENTE COM UM DICIONÁRIO
-

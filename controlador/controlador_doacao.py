@@ -1,3 +1,4 @@
+import datetime
 from entidade.doacao import Doacao
 from limite.tela_doacao import TelaDoacao
 
@@ -13,6 +14,10 @@ class ControladorDoacao:
     def doar(self):
         dados_doacao = self.__tela_doacao.pega_dados_doacao()
         doador = self.__controlador_pessoa.buscar_pessoa(dados_doacao["cpf_doador"])
+
+        if doador is None:
+            self.__tela_doacao.mostrar_mensagem("Doador não encontrado, cadastre o doador:")
+            doador = self.__controlador_sistema.controlador_pessoa.incluir_doador()
 
         chip = dados_doacao["chip_animal"]
         nome = dados_doacao["nome_animal"]
@@ -30,30 +35,26 @@ class ControladorDoacao:
     def emitir_relatorio_doacoes(self):
         datas = self.__tela_doacao.pega_datas_relatorio()
 
-        inicio = datas["inicio"]
-        fim = datas["fim"]
+        formato_data = "%Y-%m-%d"
 
-        doacoes = [doacao for doacao in self.__doacoes if inicio <= doacao.data <= fim]
+        # Converter as datas de string para datetime
+        inicio = datetime.datetime.strptime(datas["inicio"], formato_data)
+        fim = datetime.datetime.strptime(datas["fim"], formato_data)
+
+        doacoes = [doacao for doacao in self.__doacoes if inicio <= datetime.datetime.strptime(doacao.data, formato_data) <= fim]
         if len(doacoes) == 0:
+            print()
             self.__tela_doacao.mostrar_mensagem(
                 "Nenhuma doação realizada nesse período"
             )
             return
-
-        self.__tela_doacao.mostrar_mensagem("-------- Relátorio ---------")
+        
+        print()
+        self.__tela_doacao.mostrar_mensagem("-------- RELATÓRIO ---------")
         for doacao in doacoes:
-            self.__tela_doacao.mostra_doacao(doacao)
+            self.__tela_doacao.mostrar_doacao(doacao)
 
         return doacoes
-
-    def mostra_doacao(self, doacao):
-        print(f"Nome do doador: {doacao.doador.nome}")
-        print(f"CPF do doador: {doacao.doador.cpf}")
-
-        print(f"Nome do animal: {doacao.animal.nome}")
-        print(f"Chip do animal: {doacao.animal.chip}")
-
-        print(f"Data da Doação: {doacao.data}")
 
     def abrir_tela(self):
         lista_opcoes = {

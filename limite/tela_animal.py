@@ -20,7 +20,7 @@ class TelaAnimal(AbstractTela, AbstractTelaAnimal):
 
         return self.le_numero_inteiro("Escolha uma opção: ", [1, 2, 3, 4, 0])
     
-    def mostra_mensagem(self, msg):
+    def mostrar_mensagem(self, msg):
         print(msg)
 
     def mostrar_animal(self, animal):

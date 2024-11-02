@@ -1,3 +1,4 @@
+import datetime
 from entidade.adotante import Adotante
 from entidade.adocao import Adocao
 from entidade.animal import Animal
@@ -13,11 +14,13 @@ class ControladorAdocao:
 
     def emitir_relatorio_adocoes(self):
         datas = self.__tela_adocao.pega_datas_relatorio()
+        formato_data = "%Y-%m-%d"
 
-        inicio = datas["inicio"]
-        fim = datas["fim"]
+        # Converter as datas de string para datetime
+        inicio = datetime.datetime.strptime(datas["inicio"], formato_data)
+        fim = datetime.datetime.strptime(datas["fim"], formato_data)
 
-        adocoes = [adocao for adocao in self.__adocoes if inicio <= adocao.data <= fim]
+        adocoes = [adocao for adocao in self.__adocoes if inicio <= datetime.datetime.strptime(adocao.data, formato_data) <= fim]
         if len(adocoes) == 0:
             self.__tela_adocao.mostrar_mensagem(
                 "Nenhuma adoção realizada nesse período"
@@ -26,7 +29,7 @@ class ControladorAdocao:
 
         self.__tela_adocao.mostrar_mensagem("-------- Relátorio ---------")
         for adocao in adocoes:
-            self.__tela_adocao.mostra_adocao(adocao)
+            self.__tela_adocao.mostrar_adocao(adocao)
 
         return adocoes
 

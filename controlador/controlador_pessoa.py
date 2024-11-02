@@ -27,13 +27,13 @@ class ControladorPessoa():
         endereco = dados_doador["endereco"]
 
         if not self.validar_cpf(cpf):
-            self.__tela_pessoa.mostra_mensagem("CPF inválido")
+            self.__tela_pessoa.mostrar_mensagem("CPF inválido")
             return
         
         if self.buscar_pessoa(cpf) != None:
             if isinstance(self.buscar_pessoa(cpf), Adotante):
-                self.__tela_pessoa.mostra_mensagem("CPF já cadastrado para um adotante")
-                self.__tela_pessoa.mostra_mensagem("Doadores não podem ser adotantes, portanto ao alterar o cadastro para doador você não poderá mais adotar animais")
+                self.__tela_pessoa.mostrar_mensagem("CPF já cadastrado para um adotante")
+                self.__tela_pessoa.mostrar_mensagem("Doadores não podem ser adotantes, portanto ao alterar o cadastro para doador você não poderá mais adotar animais")
                 alterar = input("Deseja alterar o cadastro para doador? (s/n) ")
 
                 if alterar == 's':
@@ -42,20 +42,20 @@ class ControladorPessoa():
                     doador = Doador(cpf, nome, data_nascimento, endereco)
                     self.__doadores.append(doador)
 
-                    self.__tela_pessoa.mostra_mensagem("Cadastro alterado com sucesso")
+                    self.__tela_pessoa.mostrar_mensagem("Cadastro alterado com sucesso")
 
                     return doador
 
                 return
 
-            self.__tela_pessoa.mostra_mensagem("Doador já cadastrado")
+            self.__tela_pessoa.mostrar_mensagem("Doador já cadastrado")
             return
         
         doador = Doador(cpf, nome, data_nascimento, endereco)
 
         self.__doadores.append(doador)
 
-        self.__tela_pessoa.mostra_mensagem("Doador cadastrado com sucesso")
+        self.__tela_pessoa.mostrar_mensagem("Doador cadastrado com sucesso")
 
         return doador
 
@@ -70,44 +70,44 @@ class ControladorPessoa():
         possui_animais = dados_adotante["possui_animais"]
 
         if not self.validar_cpf(cpf):
-            self.__tela_pessoa.mostra_mensagem("CPF inválido")
+            self.__tela_pessoa.mostrar_mensagem("CPF inválido")
             return
         
         if self.buscar_pessoa(cpf) != None:
             if isinstance(self.buscar_pessoa(cpf), Doador):
-                self.__tela_pessoa.mostra_mensagem("CPF já cadastrado para um doador, portanto não pode ser de um adotante")
+                self.__tela_pessoa.mostrar_mensagem("CPF já cadastrado para um doador, portanto não pode ser de um adotante")
 
-            self.__tela_pessoa.mostra_mensagem("CPF já cadastrado para um adotante")
+            self.__tela_pessoa.mostrar_mensagem("CPF já cadastrado para um adotante")
             return
             
         if not self.validar_idade(data_nascimento):
-            self.__tela_pessoa.mostra_mensagem("O adotante precisa ser maior de 18 anos")
+            self.__tela_pessoa.mostrar_mensagem("O adotante precisa ser maior de 18 anos")
             return
 
         adotante = Adotante(cpf, nome, data_nascimento, endereco, tipo_habitacao, tamanho_habitacao, possui_animais)
         self.__adotantes.append(adotante)
 
-        self.__tela_pessoa.mostra_mensagem("Adotante cadastrado com sucesso")
+        self.__tela_pessoa.mostrar_mensagem("Adotante cadastrado com sucesso")
 
         return adotante
 
     def listar_doadores(self):
         if len(self.__doadores) == 0:
-            self.__tela_pessoa.mostra_mensagem("Nenhum doador cadastrado")
+            self.__tela_pessoa.mostrar_mensagem("Nenhum doador cadastrado")
             return
         
         for doador in self.__doadores:
-            self.__tela_pessoa.mostra_pessoa(doador)
+            self.__tela_pessoa.mostrar_pessoa(doador)
 
         return self.__doadores
     
     def listar_adotantes(self):
         if len(self.__adotantes) == 0:
-            self.__tela_pessoa.mostra_mensagem("Nenhum adotante cadastrado")
+            self.__tela_pessoa.mostrar_mensagem("Nenhum adotante cadastrado")
             return
         
         for adotante in self.__adotantes:
-            self.__tela_pessoa.mostra_pessoa(adotante)
+            self.__tela_pessoa.mostrar_pessoa(adotante)
 
         return self.__adotantes
 
@@ -119,7 +119,7 @@ class ControladorPessoa():
 
         for pessoa in pessoas:
             if pessoa.cpf == cpf:
-                self.__tela_pessoa.mostra_pessoa(pessoa)
+                self.__tela_pessoa.mostrar_pessoa(pessoa)
                 return pessoa
         return None
     

@@ -57,7 +57,7 @@ class TelaPessoa(AbstractTela, AbstractTelaPessoa):
             "possui_animais": possui_animais,
         }
 
-    def mostra_pessoa(self, pessoa):
+    def mostrar_pessoa(self, pessoa):
         print(f"Nome: {pessoa.nome}")
         print(f"CPF: {pessoa.cpf}")
         print(f"Data de Nascimento: {pessoa.data_nascimento}")
@@ -73,7 +73,7 @@ class TelaPessoa(AbstractTela, AbstractTelaPessoa):
         cpf = self.valida_cpf()
         return cpf
 
-    def mostra_mensagem(self, msg):
+    def mostrar_mensagem(self, msg):
         print(msg)
 
     def valida_vacinas(self):

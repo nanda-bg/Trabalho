@@ -29,6 +29,9 @@ class TelaVacina(AbstractTela, AbstractTelaAnimal):
 
         return {"chip_animal": chip_animal}
     
+    def mostrar_mensagem(self, mensagem):
+        print(mensagem)
+    
     
 
 

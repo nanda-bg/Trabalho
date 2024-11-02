@@ -1,7 +1,9 @@
 from datetime import date
 
 class Doacao:
-    def __init__(self, animal, doador, motivo_doacao, data = date.today().isoformat):        
+    def __init__(self, animal, doador, motivo_doacao, data = None):        
+        if data is None:
+            data = date.today().isoformat()
         self.__data = data
         self.__animal = animal
         self.__doador = doador
