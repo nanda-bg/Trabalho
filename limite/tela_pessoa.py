@@ -15,11 +15,13 @@ class TelaPessoa(AbstractTela, AbstractTelaPessoa):
         print("3 - Listar Doadores")
         print("4 - Listar Adotantes")
         print("5 - Buscar Pessoa por CPF")
+        print("6 - Alterar Doador")
+        print("7 - Alterar Adotante")
         print("0 - Retornar")
 
         print()
 
-        return self.le_numero_inteiro("Escolha uma opção: ", [1, 2, 3, 4, 5, 0])
+        return self.le_numero_inteiro("Escolha uma opção: ", [1, 2, 3, 4, 5, 6, 7, 0])
 
     def pega_dados_doador(self):
         print("-------- DADOS DOADOR ----------")
@@ -89,3 +91,75 @@ class TelaPessoa(AbstractTela, AbstractTelaPessoa):
             data = self.valida_data("Data da vacinação (dd/mm/aaaa): ")
             vacinas.append({"nome": nome, "data": data})
         return vacinas
+
+    def pega_dados_alteracao_doador(self):
+        cpf = self.valida_cpf()
+
+        self.mostrar_mensagem("Digite os novos dados do doador. Para manter os dados antigos, apenas aperte Enter.")
+
+        while True:
+            nome = input("Nome (mínimo 3 caracteres): ")
+            if nome == "" or len(nome) >= 3:
+                break
+            print("O nome deve ter pelo menos 3 caracteres.")
+
+        while True:
+            endereco = input("Endereço (mínimo 3 caracteres): ")
+            if endereco == "" or len(endereco) >= 3:
+                break
+            print("O endereço deve ter pelo menos 3 caracteres.")
+
+        return {
+            "cpf": cpf,
+            "nome": nome if nome != "" else None,
+            "endereço": endereco if endereco != "" else None,
+        }
+
+
+    def pega_dados_alteracao_adotante(self):
+        cpf = self.valida_cpf()
+
+        self.mostrar_mensagem("Digite os novos dados do adotante. Para manter os dados antigos, apenas aperte Enter.")
+
+        while True:
+            nome = input("Nome (mínimo 3 letras): ")
+            if nome == "" or len(nome) >= 3:
+                break
+            print("O nome deve ter pelo menos 3 letras.")
+
+        while True:
+            endereco = input("Endereço (mínimo 3 letras): ")
+            if endereco == "" or len(endereco) >= 3:
+                break
+            print("O endereço deve ter pelo menos 3 letras.")
+
+        while True:
+            tipo_habitacao = input("Tipo de Habitação (casa ou apartamento): ").lower()
+            if tipo_habitacao == "" or tipo_habitacao in ["casa", "apartamento"]:
+                break
+            print("O tipo de habitação deve ser 'casa' ou 'apartamento'.")
+
+        while True:
+            tamanho_habitacao = input("Tamanho da Habitação (pequeno ou grande): ").lower()
+            if tamanho_habitacao == "" or tamanho_habitacao in ["pequeno", "grande"]:
+                break
+            print("O tamanho da habitação deve ser 'pequeno' ou 'grande'.")
+
+        while True:
+            possui_animais = input("Possui Animais (s/n): ").lower()
+            if possui_animais == "":
+                possui_animais = None
+                break
+            elif possui_animais in ["s", "n"]:
+                possui_animais = (possui_animais == "s")
+                break
+            print("Digite 's' para sim ou 'n' para não.")
+
+        return {
+            "cpf": cpf,
+            "nome": nome if nome != "" else None,
+            "endereço": endereco if endereco != "" else None,
+            "tipo_habitacao": tipo_habitacao if tipo_habitacao != "" else None,
+            "tamanho_habitacao": tamanho_habitacao if tamanho_habitacao != "" else None,
+            "possui_animais": possui_animais
+        }

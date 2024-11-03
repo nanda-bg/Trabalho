@@ -168,10 +168,73 @@ class ControladorPessoa():
         
         return True
 
+    def alterar_doador(self):
+        dados = self.__tela_pessoa.pega_dados_alteracao_doador()
+
+        cpf = dados["cpf"]
+        pessoa = self.buscar_pessoa(cpf)
+
+        if pessoa is None:
+            self.__tela_pessoa.mostrar_mensagem("Pessoa não encontrada.")
+            return None
+
+        if not isinstance(pessoa, Doador):
+            self.__tela_pessoa.mostrar_mensagem("Essa pessoa não é um doador.")
+            return None
+
+        novo_nome = dados["nome"]
+        novo_endereco = dados["endereco"]
+
+        if novo_nome is not None:
+            pessoa.nome = novo_nome
+
+        if novo_endereco is not None:
+            pessoa.endereco = novo_endereco
+
+        self.__tela_pessoa.mostrar_mensagem("Dados do doador alterados com sucesso.")
+        return pessoa
+
+    def alterar_adotante(self):
+        dados = self.__tela_pessoa.pega_dados_alteracao_adotante()
+
+        cpf = dados["cpf"]
+        pessoa = self.buscar_pessoa(cpf)
+
+        if pessoa is None:
+            self.__tela_pessoa.mostrar_mensagem("Pessoa não encontrada.")
+            return None
+
+        if not isinstance(pessoa, Adotante):  # Verifica se a pessoa é um adotante
+            self.__tela_pessoa.mostrar_mensagem("Essa pessoa não é um adotante.")
+            return None
+
+        novo_nome = dados["nome"]
+        novo_endereco = dados["endereco"]
+        novo_tipo_habitacao = dados["tipo_habitacao"]
+        novo_tamanho_habitacao = dados["tamanho_habitacao"]
+        possui_animais = dados["possui_animais"]
+
+        if novo_nome is not None:
+            pessoa.nome = novo_nome
+
+        if novo_endereco is not None:
+            pessoa.endereco = novo_endereco
+
+        if novo_tipo_habitacao is not None:
+            pessoa.tipo_habitacao = novo_tipo_habitacao
+
+        if novo_tamanho_habitacao is not None:
+            pessoa.tamanho_habitacao = novo_tamanho_habitacao
+
+        if possui_animais is not None:
+            pessoa.possui_animais = possui_animais
+
+        self.__tela_pessoa.mostrar_mensagem("Dados do adotante alterados com sucesso.")
+        return pessoa
 
     def abrir_tela(self):
         lista_opcoes = {1: self.incluir_doador, 2: self.incluir_adotante, 3: self.listar_doadores, 
-                        4: self.listar_adotantes, 5: self.buscar_pessoa, 0: self.retornar}
+                        4: self.listar_adotantes, 5: self.buscar_pessoa, 6:self.alterar_doador, 7: self.alterar_adotante, 0: self.retornar}
 
         while True:
             opcao_escolhida = self.__tela_pessoa.tela_opcoes()

@@ -14,7 +14,7 @@ class ControladorAnimal:
 
     def adicionar_animal(self, chip = None, nome = None, raca = None, vacinas = None, tipo_animal = None, porte = None):
         if chip is None:
-            dados_animal = self.__tela_doacao.pega_dados_animal()
+            dados_animal = self.__tela_animal.pega_dados_animal()
             chip = dados_animal["chip"]
             nome = dados_animal["nome"]
             raca = dados_animal["raca"]
@@ -145,3 +145,20 @@ class ControladorAnimal:
                 return animal
               
         return None  
+        
+    def alterar_animal(self):
+        dados = self.__tela_animal.pega_dados_alteração()
+
+        chip_original = dados["chip_original"]
+        animal = self.buscar_animal(chip_original)
+
+        novo_nome = dados["nome"]
+        novo_chip = dados["chip_novo"]
+
+        if novo_nome != None:
+            animal.nome = novo_nome
+
+        if novo_chip != None:
+            animal.chip = novo_chip    
+
+        return animal    

@@ -16,14 +16,26 @@ class Doacao:
     @property
     def animal(self):
         return self.__animal
+    
+    @animal.setter
+    def animal(self, animal):
+        self.__animal = animal
 
     @property
     def doador(self):
         return self.__doador
+    
+    @doador.setter
+    def doador(self, doador):
+        self.__doador = doador
 
     @property
     def motivo_doacao(self):
         return self.__motivo_doacao
+    
+    @motivo_doacao.setter
+    def motivo_doacao(self, motivo_doacao):
+        self.__motivo_doacao = motivo_doacao
 
     def __str__(self):
         return f'{self.doador.nome} doou o animal {self.animal.nome}'    

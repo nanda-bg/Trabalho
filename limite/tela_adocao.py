@@ -18,11 +18,13 @@ class TelaAdocao(AbstractTela, AbstractTelaPessoa, AbstractTelaAnimal, AbstractT
         print("1 - Adotar")
         print("2 - Emitir relatório de adoções")
         print("3 - Assinar termo de adoção")
+        print("4 - Alterar adoção")
+        print("5 - Excluir adoção")
         print("0 - Voltar")
 
         print()
 
-        return self.le_numero_inteiro("Escolha uma opção: ", [1, 2, 3, 0])
+        return self.le_numero_inteiro("Escolha uma opção: ", [1, 2, 3, 4, 5, 0])
     
     def mostrar_mensagem(self, msg):
         print(msg)
@@ -62,4 +64,39 @@ class TelaAdocao(AbstractTela, AbstractTelaPessoa, AbstractTelaAnimal, AbstractT
             
             except ChipInvalidoException as e:
                 self.mostrar_mensagem(e)  
+
+
+    def pega_dados_alteracao(self):
+        chip_original = self.valida_chip()
+
+        self.mostrar_mensagem("Digite os novos dados da adoção. Para manter os dados antigos, apenas aperte Enter.")
+
+        cpf = input("Novo adotante (CPF): ")
+        
+        if cpf == "":
+            cpf = None
+
+        else:    
+            cpf_esta_correto = self.validar_numeros_cpf(cpf)
+
+            while not cpf_esta_correto:
+                self.mostrar_mensagem("CPF inválido, tente novamente")
+                cpf = input("Novo adotante (CPF): ")
+                if cpf == "":
+                    cpf = None
+                    break
+                cpf_esta_correto = self.validar_numeros_cpf
+
+        animal = input("Novo animal (Chip): ")
+        if animal == "":
+            animal = None
+        else:
+            while not ( len(animal.strip()) == 7 and animal.isdigit() ):
+                self.mostrar_mensagem("O chip deve ter 7 dígitos numéricos.")
+                animal = input("Novo animal (Chip): ")
+                if animal == "":
+                    animal = None
+                    break    
+
+        return {"chip_original": chip_original, "cpf": cpf , "animal": animal}                        
                                

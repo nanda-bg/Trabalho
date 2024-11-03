@@ -152,11 +152,89 @@ class ControladorAdocao:
         self.__tela_adocao.mostrar_mensagem("Termo de adoção não foi assinado")
         return
 
+
+    def excluir_adocao(self):
+        chip_animal = self.__tela_adocao.pega_chip()
+
+        for adocao in self.__adocoes:
+            if adocao.animal.chip == chip_animal:
+                print()
+                self.__tela_adocao.mostrar_adocao(adocao)
+                print()
+                confirma = input("Tem certeza que deseja excluir a adoção? (s/n) ")
+
+                if confirma.lower() == "s":
+                    self.__adocoes.remove(adocao)
+                    print()
+                    self.__tela_adocao.mostrar_mensagem(f"Adoção do animal com o chip {chip_animal} foi excluída.")
+                
+                else: 
+                    self.__tela_adocao.mostrar_mensagem(f"Operação cancelada.")
+                
+                return
+
+        print()
+        self.__tela_adocao.mostrar_mensagem(f"Nenhuma adoção encontrada com o chip {chip_animal}.")
+        return 
+
+    def alterar_adocao(self):
+        dados = self.__tela_adocao.pega_dados_alteracao()
+
+        chip_animal = dados["chip_original"]
+
+        adocao = self.buscar_adocao(chip_animal)
+
+        if adocao is None:
+            print()
+            self.__tela_adocao.mostrar_mensagem("Adoção não encontrada.")
+            return None
+
+        cpf_adotante = dados["cpf"]
+
+        if cpf_adotante is not None:
+            adotante = self.__controlador_sistema.controlador_pessoa.buscar_pessoa(cpf_adotante)
+            if adotante is None:
+                print()
+                confirma = input("O novo adotante não existe, deseja cadastrar? (s/n) ")
+                if confirma.lower() == "s":
+                    print()
+                    adotante = self.__controlador_sistema.controlador_pessoa.incluir_adotante()
+                else:
+                    self.__tela_adocao.mostrar_mensagem("Operação cancelada.")
+                    return None
+        else:
+            adotante = None
+
+        animal = self.__controlador_sistema.controlador_animal.buscar_animal(dados["animal"])
+
+        if animal is not None:
+            adocao.animal = animal
+
+        if adotante is not None:
+            adocao.adotante = adotante
+
+        print()
+        self.__tela_adocao.mostrar_mensagem("Adoção alterada com sucesso.")
+        print()
+        self.__tela_adocao.mostrar_adocao(adocao)
+
+        return adocao
+
+    def buscar_adocao(self, chip_animal):
+        for adocao in self.__adocoes:
+            if adocao.animal.chip == chip_animal:
+                return adocao
+
+        return None
+
+
     def abrir_tela(self):
         lista_opcoes = {
             1: self.adotar,
             2: self.emitir_relatorio_adocoes,
             3: self.assinar_termo_adocao,
+            4: self.alterar_adocao,
+            5: self.excluir_adocao,
             0: self.retornar,
         }
 

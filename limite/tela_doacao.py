@@ -22,11 +22,13 @@ class TelaDoacao(
         print("Escolha uma opção:")
         print("1 - Doar")
         print("2 - Emitir relatório de doações")
+        print("3 - Excluir doação")
+        print("4 - Alterar doação")
         print("0 - Voltar")
 
         print()
 
-        return self.le_numero_inteiro("Escolha uma opção: ", [1, 2, 0])
+        return self.le_numero_inteiro("Escolha uma opção: ", [1, 2, 3, 4, 0])
 
     def pega_dados_doacao(self):
         print("-------- DADOS DOAÇÃO ----------")
@@ -88,4 +90,56 @@ class TelaDoacao(
         print(f"Chip do animal: {doacao.animal.chip}")
 
         print(f"Data da doação: {doacao.data}")    
-    
+
+    def pega_chip(self):
+        chip = self.valida_chip()
+
+        return chip
+
+    def pega_dados_alteracao(self):
+        self.mostrar_mensagem("Informações para buscar a doação")
+        chip_original = self.valida_chip()
+
+        print()
+        self.mostrar_mensagem("Digite os novos dados da doação. Para manter os dados antigos, apenas aperte Enter.")
+
+        cpf = input("Novo doador (CPF): ")
+        
+        if cpf == "":
+            cpf = None
+
+        else:    
+            cpf_esta_correto = self.validar_numeros_cpf(cpf)
+
+            while not cpf_esta_correto:
+                self.mostrar_mensagem("CPF inválido, tente novamente")
+                cpf = input("Novo doador (CPF): ")
+                if cpf == "":
+                    cpf = None
+                    break
+                cpf_esta_correto = self.validar_numeros_cpf
+
+        animal = input("Novo animal (Chip): ")
+        if animal == "":
+            animal = None
+        else:
+            while not ( len(animal) == 7 and animal.isdigit() ):
+                self.mostrar_mensagem("O chip deve ter 7 dígitos numéricos.")
+                animal = input("Novo animal (Chip): ")
+                if animal == "":
+                    animal = None
+                    break
+
+        motivo_doacao = input("Novo motivo da doação: ")
+
+        if motivo_doacao == "":
+            motivo_doacao = None
+        else:
+            while not len(motivo_doacao) >= 3:
+                motivo_doacao = input("Novo motivo da doação (mínimo 3 caracteres): ")
+
+                if motivo_doacao == "":
+                    motivo_doacao = None
+                    break
+
+        return {"chip_original": chip_original, "cpf": cpf , "animal": animal, "motivo_doacao": motivo_doacao}            
