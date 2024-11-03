@@ -77,6 +77,3 @@ class Animal(ABC):
                 return False
 
         return True
-    
-    def __str__(self):
-        return f'Chip: {self.__chip}, Nome: {self.__nome}, Raça: {self.__raca}'

@@ -1,7 +1,6 @@
 import datetime
 from entidade.adotante import Adotante
 from entidade.adocao import Adocao
-from entidade.animal import Animal
 from entidade.cachorro import Cachorro
 from limite.tela_adocao import TelaAdocao
 

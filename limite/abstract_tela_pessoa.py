@@ -1,14 +1,12 @@
-from abc import ABC, abstractmethod
+from abc import ABC
 import re
 from exception.cpfInvalidoException import CPFInvalidoException
-from limite.abstract_tela import AbstractTela
 from exception.booleanInvalidoException import BooleanInvalidoException
 from exception.tipoHabitacaoInvalidoException import TipoHabitacaoInvalidoException
 from exception.tamanhoHabitacaoInvalidoException import TamanhoHabitacaoInvalidoException
 from exception.cpfInvalidoException import CPFInvalidoException
 from exception.enderecoInvalidoException import EnderecoInvalidoException
 from exception.nomeInvalidoException import NomeInvalidoException
-from limite.abstract_tela import AbstractTela
 from datetime import datetime
 import re
 

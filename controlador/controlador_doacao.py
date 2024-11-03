@@ -24,8 +24,14 @@ class ControladorDoacao:
         nome = dados_doacao["nome_animal"]
         raca = dados_doacao["raca_animal"]
         vacinas = dados_doacao["vacinas_animal"]
+        tipo_animal = dados_doacao["tipo_animal"]
 
-        animal = self.__controlador_animal.adicionar_animal(chip, nome, raca, vacinas)
+        if tipo_animal == "cachorro":
+            porte = dados_doacao["porte"]
+            animal = self.__controlador_animal.adicionar_animal(chip, nome, raca, vacinas, tipo_animal, porte)
+
+        else:
+            animal = self.__controlador_animal.adicionar_animal(chip, nome, raca, vacinas, tipo_animal)
 
         motivo_doacao = dados_doacao["motivo_doacao"]
 
@@ -55,6 +61,7 @@ class ControladorDoacao:
         self.__tela_doacao.mostrar_mensagem("-------- RELATÓRIO ---------")
         for doacao in doacoes:
             self.__tela_doacao.mostrar_doacao(doacao)
+            print()
 
         return doacoes
 

@@ -32,6 +32,8 @@ class TelaDoacao(
         print("-------- DADOS DOAÇÃO ----------")
 
         cpf_doador = self.valida_cpf()
+        tipo_animal = self.valida_tipo_animal()
+
         nome_animal = self.valida_nome_animal()
         chip_animal = self.valida_chip()
         raca_animal = self.valida_raca_animal()
@@ -40,6 +42,19 @@ class TelaDoacao(
 
         motivo_doacao = self.valida_motivo_doacao()
 
+        if tipo_animal == "cachorro":
+            porte = self.valida_porte()
+            return {
+                "cpf_doador": cpf_doador,
+                "nome_animal": nome_animal,
+                "chip_animal": chip_animal,
+                "raca_animal": raca_animal,
+                "vacinas_animal": vacinas_animal,
+                "porte": porte,
+                "motivo_doacao": motivo_doacao,
+                "tipo_animal": tipo_animal,
+            }
+
         return {
             "cpf_doador": cpf_doador,
             "nome_animal": nome_animal,
@@ -47,6 +62,7 @@ class TelaDoacao(
             "raca_animal": raca_animal,
             "vacinas_animal": vacinas_animal,
             "motivo_doacao": motivo_doacao,
+            "tipo_animal": tipo_animal
         }
 
     def valida_motivo_doacao(self):

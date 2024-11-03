@@ -25,6 +25,11 @@ class TelaAnimal(AbstractTela, AbstractTelaAnimal):
         print(msg)
 
     def mostrar_animal(self, animal):
+        if hasattr(animal, "porte"):
+            print("Tipo: Cachorro")
+            print(f"Porte: {animal.porte}")
+        else:
+            print("Tipo: Gato")    
         print(f"Nome: {animal.nome}")
         print(f"Chip: {animal.chip}")
         print(f"Raça: {animal.raca}")

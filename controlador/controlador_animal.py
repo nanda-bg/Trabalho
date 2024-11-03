@@ -1,5 +1,5 @@
-from entidade.animal import Animal
-from entidade.vacina import Vacina
+from entidade.cachorro import Cachorro
+from entidade.gato import Gato
 from limite.tela_animal import TelaAnimal
 from limite.tela_vacina import TelaVacina
 
@@ -12,13 +12,16 @@ class ControladorAnimal:
         self.__tela_vacina = TelaVacina()
         self.__controlador_sistema = controlador_sistema
 
-    def adicionar_animal(self, chip = None, nome = None, raca = None, vacinas = None):
+    def adicionar_animal(self, chip = None, nome = None, raca = None, vacinas = None, tipo_animal = None, porte = None):
         if chip is None:
             dados_animal = self.__tela_doacao.pega_dados_animal()
             chip = dados_animal["chip"]
             nome = dados_animal["nome"]
             raca = dados_animal["raca"]
             vacinas = dados_animal["vacinas"] #LISTA
+            tipo_animal = dados_animal["tipo_animal"]
+            if tipo_animal == "cachorro":
+                porte = dados_animal["porte"]
             
         existe = self.buscar_animal(chip)
 
@@ -27,7 +30,11 @@ class ControladorAnimal:
             self.__tela_animal.mostrar_mensagem("Chip já cadastrado.")
             return
             
-        animal = Animal(chip, nome, raca, vacinas)
+        if tipo_animal == "cachorro":
+            animal = Cachorro(chip, nome, raca, porte, vacinas)
+
+        else:    
+            animal = Gato(chip, nome, raca, vacinas)
         
         self.todos_animais.append(animal)
 
