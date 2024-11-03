@@ -66,6 +66,10 @@ class ONG:
         return [animal.nome for animal in self.todos_animais]
 
     def listar_animais_disponiveis(self):
+        if len(self.animais_disponiveis) < 1:
+            print("Nenhum animal disponível.")
+            return
+        
         return [animal.nome for animal in self.animais_disponiveis]
 
     def emitir_relatorio_adocoes(self, inicio, fim):

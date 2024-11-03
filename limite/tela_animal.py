@@ -27,5 +27,5 @@ class TelaAnimal(AbstractTela, AbstractTelaAnimal):
         print(f"Nome: {animal.nome}")
         print(f"Chip: {animal.chip}")
         print(f"Raça: {animal.raca}")
-        print(f"Vacinas: {animal.vacinas}")    
+        print(f"Vacinas: {[str(vacina) for vacina in animal.vacinas]}")    
     

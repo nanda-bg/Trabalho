@@ -49,7 +49,7 @@ class ControladorAnimal:
             print("O animal já possui a vacina selecionada.")
         else:
             print()
-            self.__tela_vacina.mostrar_mensagem(f"{vacina} selecionada.")
+            self.__tela_vacina.mostrar_mensagem(f"{vacina} adicionada.")
         
             animal.vacinas.append(vacina)
 
@@ -75,7 +75,7 @@ class ControladorAnimal:
             self.__tela_animal.mostrar_mensagem(animal)
     
     def listar_animais_disponiveis(self):
-        if len(self.todos_animais) < 1:
+        if len(self.animais_disponiveis) < 1:
             self.__tela_animal.mostrar_mensagem("Nenhum animal")
             return
         

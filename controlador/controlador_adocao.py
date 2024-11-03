@@ -84,6 +84,7 @@ class ControladorAdocao:
             return
 
         if self.avaliar_adocao(animal, adotante):
+            print()
             self.__tela_adocao.mostrar_mensagem(
                 f"Adoção do animal {animal.nome} aprovada."
             )
