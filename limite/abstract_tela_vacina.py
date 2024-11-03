@@ -29,7 +29,7 @@ class AbstractTelaVacina(ABC):
 
         print()
 
-        vacina = self.le_numero_inteiro("Escolha uma opção: ", [1, 2, 3, 4, 5, 6, 0])
+        vacina = self.le_numero_inteiro("Escolha uma opção: ", [1, 2, 3, 4, 5, 6])
         return vacinas[vacina]
 
     def valida_vacinas(self):
