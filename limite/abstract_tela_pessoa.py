@@ -24,12 +24,13 @@ class AbstractTelaPessoa(ABC):
                 # Verifica se o CPF tem apenas números (11 dígitos)
                 if re.match(r'^\d{11}$', cpf):
                     # Formata o CPF para NNN.NNN.NNN-NN
-                    cpf_formatado = f"{cpf[:3]}.{cpf[3:6]}.{cpf[6:9]}-{cpf[9:]}"
-                    return cpf_formatado
+                    cpf = f"{cpf[:3]}.{cpf[3:6]}.{cpf[6:9]}-{cpf[9:]}"
                 
                 # Verifica se o CPF já está no formato NNN.NNN.NNN-NN
-                elif re.match(r'^\d{3}\.\d{3}\.\d{3}-\d{2}$', cpf):
-                    return cpf
+                if re.match(r'^\d{3}\.\d{3}\.\d{3}-\d{2}$', cpf):
+                    if self.validar_numeros_cpf(cpf):
+                        return cpf
+                    raise CPFInvalidoException()
                 
                 else:
                     raise CPFInvalidoException()
@@ -106,3 +107,35 @@ class AbstractTelaPessoa(ABC):
             except BooleanInvalidoException as e:
                 self.mostrar_mensagem(e) 
             
+
+    def validar_numeros_cpf(self, cpf):
+        # Limpa o cpf para deixar apenas os números
+        cpf = cpf.replace('.', '').replace('-', '')
+
+        # Verifica se o CPF tem 11 dígitos
+        if len(cpf) != 11 or not cpf.isdigit():
+            return False
+
+        # Verifica se todos os dígitos são iguais
+        if len(set(cpf)) == 1:
+            return False
+
+        # Calcula o primeiro dígito verificador
+        soma = sum(int(cpf[i]) * (10 - i) for i in range(9))
+        resto = soma % 11
+        digito_1 = 0 if resto < 2 else 11 - resto
+
+        # Verifica o primeiro dígito verificador
+        if int(cpf[9]) != digito_1:
+            return False
+
+        # Calcula o segundo dígito verificador
+        soma = sum(int(cpf[i]) * (11 - i) for i in range(10))
+        resto = soma % 11
+        digito_2 = 0 if resto < 2 else 11 - resto
+
+        # Verifica o segundo dígito verificador
+        if int(cpf[10]) != digito_2:
+            return False
+        
+        return True
