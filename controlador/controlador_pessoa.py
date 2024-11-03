@@ -96,20 +96,24 @@ class ControladorPessoa():
 
     def listar_doadores(self):
         if len(self.__doadores) == 0:
+            print()
             self.__tela_pessoa.mostrar_mensagem("Nenhum doador cadastrado")
             return
         
         for doador in self.__doadores:
+            print()
             self.__tela_pessoa.mostrar_pessoa(doador)
 
         return self.__doadores
     
     def listar_adotantes(self):
         if len(self.__adotantes) == 0:
+            print()
             self.__tela_pessoa.mostrar_mensagem("Nenhum adotante cadastrado")
             return
         
         for adotante in self.__adotantes:
+            print()
             self.__tela_pessoa.mostrar_pessoa(adotante)
 
         return self.__adotantes
@@ -204,7 +208,7 @@ class ControladorPessoa():
             self.__tela_pessoa.mostrar_mensagem("Pessoa não encontrada.")
             return None
 
-        if not isinstance(pessoa, Adotante):  # Verifica se a pessoa é um adotante
+        if not isinstance(pessoa, Adotante):
             self.__tela_pessoa.mostrar_mensagem("Essa pessoa não é um adotante.")
             return None
 
@@ -229,12 +233,53 @@ class ControladorPessoa():
         if possui_animais is not None:
             pessoa.possui_animais = possui_animais
 
+        print()
         self.__tela_pessoa.mostrar_mensagem("Dados do adotante alterados com sucesso.")
+        return pessoa
+    
+    def excluir_doador(self):
+        cpf = self.__tela_pessoa.seleciona_pessoa()
+        pessoa = self.buscar_pessoa(cpf)
+
+        if pessoa is None:
+            print()
+            self.__tela_pessoa.mostrar_mensagem("Pessoa não encontrada.")
+            return None
+
+        if not isinstance(pessoa, Doador):
+            print()
+            self.__tela_pessoa.mostrar_mensagem("Essa pessoa não é um doador.")
+            return None
+
+        self.__doadores.remove(pessoa)
+        print()
+        self.__tela_pessoa.mostrar_mensagem("Doador removido com sucesso.")
+        return pessoa
+    
+    def excluir_adotante(self):
+        cpf = self.__tela_pessoa.seleciona_pessoa()
+        pessoa = self.buscar_pessoa(cpf)
+
+        if pessoa is None:
+            print()
+            self.__tela_pessoa.mostrar_mensagem("Pessoa não encontrada.")
+            return None
+
+        if not isinstance(pessoa, Adotante):
+            print()
+            self.__tela_pessoa.mostrar_mensagem("Essa pessoa não é um adotante.")
+            return None
+
+        self.__adotantes.remove(pessoa)
+        print()
+        self.__tela_pessoa.mostrar_mensagem("Adotante removido com sucesso.")
         return pessoa
 
     def abrir_tela(self):
         lista_opcoes = {1: self.incluir_doador, 2: self.incluir_adotante, 3: self.listar_doadores, 
-                        4: self.listar_adotantes, 5: self.buscar_pessoa, 6:self.alterar_doador, 7: self.alterar_adotante, 0: self.retornar}
+                        4: self.listar_adotantes, 5: self.buscar_pessoa, 6:self.alterar_doador, 
+                        7: self.alterar_adotante, 8: self.excluir_doador, 9: self.excluir_adotante, 
+                        0: self.retornar}
 
         while True:
             opcao_escolhida = self.__tela_pessoa.tela_opcoes()

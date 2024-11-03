@@ -17,11 +17,13 @@ class TelaPessoa(AbstractTela, AbstractTelaPessoa):
         print("5 - Buscar Pessoa por CPF")
         print("6 - Alterar Doador")
         print("7 - Alterar Adotante")
+        print("8 - Excluir Doador")
+        print("9 - Excluir Adotante")
         print("0 - Retornar")
 
         print()
 
-        return self.le_numero_inteiro("Escolha uma opção: ", [1, 2, 3, 4, 5, 6, 7, 0])
+        return self.le_numero_inteiro("Escolha uma opção: ", [1, 2, 3, 4, 5, 6, 7, 8, 9, 0])
 
     def pega_dados_doador(self):
         print("-------- DADOS DOADOR ----------")
@@ -112,7 +114,7 @@ class TelaPessoa(AbstractTela, AbstractTelaPessoa):
         return {
             "cpf": cpf,
             "nome": nome if nome != "" else None,
-            "endereço": endereco if endereco != "" else None,
+            "endereco": endereco if endereco != "" else None,
         }
 
 
@@ -158,7 +160,7 @@ class TelaPessoa(AbstractTela, AbstractTelaPessoa):
         return {
             "cpf": cpf,
             "nome": nome if nome != "" else None,
-            "endereço": endereco if endereco != "" else None,
+            "endereco": endereco if endereco != "" else None,
             "tipo_habitacao": tipo_habitacao if tipo_habitacao != "" else None,
             "tamanho_habitacao": tamanho_habitacao if tamanho_habitacao != "" else None,
             "possui_animais": possui_animais

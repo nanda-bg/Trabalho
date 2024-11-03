@@ -82,18 +82,22 @@ class ControladorAnimal:
 
     def listar_animais(self):
         if len(self.todos_animais) < 1:
-            self.__tela_animal.mostrar_mensagem("Nenhum animal")
+            print()
+            self.__tela_animal.mostrar_mensagem("Nenhum animal cadastrado")
             return
         
         for animal in self.todos_animais:
+            print()
             self.__tela_animal.mostrar_mensagem(animal)
     
     def listar_animais_disponiveis(self):
         if len(self.animais_disponiveis) < 1:
-            self.__tela_animal.mostrar_mensagem("Nenhum animal")
+            print()
+            self.__tela_animal.mostrar_mensagem("Nenhum animal disponível")
             return
         
         for animal in self.animais_disponiveis:
+            print()
             self.__tela_animal.mostrar_mensagem(animal)
 
     def abrir_tela(self):
