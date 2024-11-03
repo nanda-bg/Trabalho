@@ -14,11 +14,12 @@ class TelaAnimal(AbstractTela, AbstractTelaAnimal):
         print("2 - Listar animais disponíveis para adoção")
         print("3 - Buscar animal por chip")
         print("4 - Adicionar vacina")
+        print("5 - Remover animal")
         print("0 - Retornar")
 
         print()
 
-        return self.le_numero_inteiro("Escolha uma opção: ", [1, 2, 3, 4, 0])
+        return self.le_numero_inteiro("Escolha uma opção: ", [1, 2, 3, 4, 5, 0])
     
     def mostrar_mensagem(self, msg):
         print(msg)

@@ -20,6 +20,13 @@ class ControladorAnimal:
             raca = dados_animal["raca"]
             vacinas = dados_animal["vacinas"] #LISTA
             
+        existe = self.buscar_animal(chip)
+
+        if existe != None:
+            print()
+            self.__tela_animal.mostrar_mensagem("Chip já cadastrado.")
+            return
+            
         animal = Animal(chip, nome, raca, vacinas)
         
         self.todos_animais.append(animal)
@@ -84,12 +91,33 @@ class ControladorAnimal:
 
     def abrir_tela(self):
         lista_opcoes = {1: self.listar_animais, 2: self.listar_animais_disponiveis, 3: self.buscar_animal, 
-                        4: self.adicionar_vacina, 0: self.retornar}
+                        4: self.adicionar_vacina, 5: self.remover_animal, 0: self.retornar}
 
         while True:
             opcao_escolhida = self.__tela_animal.tela_opcoes()
-            funcao_escolhida = lista_opcoes[opcao_escolhida]
-            funcao_escolhida()
+
+            if opcao_escolhida == 5:
+                chip = self.__tela_animal.valida_chip()
+                print()
+                animal = self.buscar_animal(chip)
+                print()
+
+                if animal == None:
+                    self.__tela_animal.mostrar_mensagem("Animal não encontrado.")
+
+                else:
+                    confirmar = input("Tem certeza que deseja remover esse animal? (s/n)")
+
+                    if confirmar == "s":
+                        self.remover_animal(animal)
+                        self.__tela_animal.mostrar_mensagem("Animal removido com sucesso.")
+
+                    else:
+                        self.__tela_animal.mostrar_mensagem("Operação cancelada.")
+
+            else:
+                funcao_escolhida = lista_opcoes[opcao_escolhida]
+                funcao_escolhida()
 
     def retornar(self):
         self.__controlador_sistema.abrir_tela_inicial()
@@ -108,4 +136,5 @@ class ControladorAnimal:
             if animal.chip == chip:
                 self.__tela_animal.mostrar_animal(animal)
                 return animal
+              
         return None  
