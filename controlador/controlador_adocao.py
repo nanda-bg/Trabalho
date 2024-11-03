@@ -164,6 +164,11 @@ class ControladorAdocao:
                 confirma = input("Tem certeza que deseja excluir a adoção? (s/n) ")
 
                 if confirma.lower() == "s":
+                    if hasattr(adocao.animal, "porte"):
+                        self.__controlador_sistema.controlador_animal.adicionar_animal(adocao.animal.chip, adocao.animal.nome, adocao.animal.raca, adocao.animal.vacinas, "cachorro", adocao.animal.porte)
+                    else:
+                        self.__controlador_sistema.controlador_animal.adicionar_animal(adocao.animal.chip, adocao.animal.nome, adocao.animal.raca, adocao.animal.vacinas, "gato")
+                    
                     self.__adocoes.remove(adocao)
                     print()
                     self.__tela_adocao.mostrar_mensagem(f"Adoção do animal com o chip {chip_animal} foi excluída.")
