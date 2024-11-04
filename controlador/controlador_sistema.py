@@ -6,7 +6,7 @@ from controlador.controlador_vacina import ControladorVacina
 from limite.tela_sistema import TelaSistema
 
 
-class SistemaPessoas:
+class Sistema:
     def __init__(self):
         self.__controlador_pessoa = ControladorPessoa(self)
         self.__controlador_adocao = ControladorAdocao(self)
