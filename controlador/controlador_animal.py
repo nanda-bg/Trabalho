@@ -145,7 +145,8 @@ class ControladorAnimal:
 
         for animal in animais:
             if animal.chip == chip:
-                self.__tela_animal.mostrar_animal(animal)
+                dados_animal = {"porte": animal.porte, "nome":animal.nome, "chip": animal.chip, "raca": animal.raca, "vacinas": animal.vacinas} 
+                self.__tela_animal.mostrar_animal(dados_animal)
                 return animal
               
         return None  

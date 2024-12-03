@@ -159,7 +159,8 @@ class ControladorAdocao:
         for adocao in self.__adocoes:
             if adocao.animal.chip == chip_animal:
                 print()
-                self.__tela_adocao.mostrar_adocao(adocao)
+                dados_adocao = {"nome_adotante": adocao.adotante.nome, "cpf_adotante": adocao.adotante.cpf, "nome_animal": adocao.animal.nome, "chip_animal": adocao.animal.chip, "data_adocao": adocao.data}
+                self.__tela_adocao.mostrar_adocao(dados_adocao)
                 print()
                 confirma = input("Tem certeza que deseja excluir a adoção? (s/n) ")
 

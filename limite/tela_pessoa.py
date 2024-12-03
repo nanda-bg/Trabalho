@@ -70,7 +70,7 @@ class TelaPessoa(AbstractTela, AbstractTelaPessoa):
         if hasattr(pessoa, "tipo_habitacao"):
             print(f"Tipo de Habitação: {pessoa.tipo_habitacao}")
             print(f"Tamanho da Habitação: {pessoa.tamanho_habitacao}")
-            print(f"Possui Animais: {pessoa.possui_animais}")
+            print(f"Possui Animais: {pessoa.possui_animais }")
         print("\n")
 
     def seleciona_pessoa(self):

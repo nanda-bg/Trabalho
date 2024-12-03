@@ -29,12 +29,12 @@ class TelaAdocao(AbstractTela, AbstractTelaPessoa, AbstractTelaAnimal, AbstractT
     def mostrar_mensagem(self, msg):
         print(msg)
 
-    def mostrar_adocao(self, adocao):
-        print(f"Nome do adotante: {adocao.adotante.nome}")
-        print(f"CPF do adotante: {adocao.adotante.cpf}")
+    def mostrar_adocao(self, dados_adocao):
+        print("Nome do adotante: " + {dados_adocao["nome_adotante"]})
+        print(f"CPF do adotante: " + {dados_adocao["cpf_adotante"]})
 
-        print(f"Nome do animal: {adocao.animal.nome}")
-        print(f"Chip do animal: {adocao.animal.chip}")
+        print(f"Nome do animal: {adocao.animal.nome:}")
+        print(f"Chip do animal: {adocao.animal.chip }")
 
         print(f"Data da adoção: {adocao.data}")    
 

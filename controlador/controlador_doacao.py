@@ -63,7 +63,8 @@ class ControladorDoacao:
         print()
         self.__tela_doacao.mostrar_mensagem("-------- RELATÓRIO ---------")
         for doacao in doacoes:
-            self.__tela_doacao.mostrar_doacao(doacao)
+            dados_doacao = {"nome_doador": doacao.doador.nome, "cpf": doacao.doador.cpf, "nome_animal": doacao.animal.nome, "chip": doacao.animal.chip, "data": doacao.data}
+            self.__tela_doacao.mostrar_doacao(dados_doacao)
             print()
 
         return doacoes

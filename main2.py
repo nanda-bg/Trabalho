@@ -1,6 +1,8 @@
 from controlador.controlador_sistema import SistemaPessoas
+import tkinter as tk
 
 
 if __name__ == "__main__":
-    sistema = SistemaPessoas()
+    root = tk.Tk()
+    sistema = SistemaPessoas(root)
     sistema.inicializa_sistema()

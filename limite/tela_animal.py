@@ -33,7 +33,7 @@ class TelaAnimal(AbstractTela, AbstractTelaAnimal, AbstractTelaVacina):
         else:
             print("Tipo: Gato")    
         print(f"Nome: {animal.nome}")
-        print(f"Chip: {animal.chip}")
+        print(f"Chip: {animal.chip:}")
         print(f"Raça: {animal.raca}")
         print(f"Vacinas: {[str(vacina) for vacina in animal.vacinas]}")  
 

@@ -3,17 +3,19 @@ from controlador.controlador_animal import ControladorAnimal
 from controlador.controlador_doacao import ControladorDoacao
 from controlador.controlador_pessoa import ControladorPessoa
 from controlador.controlador_vacina import ControladorVacina
-from limite.tela_sistema import TelaSistema
+# from limite.tela_sistema import TelaSistema
+from view.tela_sistema import TelaSistema
 
 
 class SistemaPessoas:
-    def __init__(self):
-        self.__controlador_pessoa = ControladorPessoa(self)
+    def __init__(self, root):
+        self.__controlador_pessoa = ControladorPessoa(self, root)
         self.__controlador_adocao = ControladorAdocao(self)
         self.__controlador_animal = ControladorAnimal(self)
         self.__controlador_doacao = ControladorDoacao(self)
         self.__controlador_vacina = ControladorVacina(self)
-        self.__tela_sistema = TelaSistema()
+        self.__tela_sistema = TelaSistema(root)
+        self.__root = root
 
     @property
     def controlador_pessoa(self):
@@ -67,6 +69,6 @@ class SistemaPessoas:
         }
 
         while True:
-            opcao_escolhida = self.__tela_sistema.tela_opcoes()
+            opcao_escolhida = self.__tela_sistema.mostra_tela()
             funcao_escolhida = lista_opcoes[opcao_escolhida]
             funcao_escolhida()
