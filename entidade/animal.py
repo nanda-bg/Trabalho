@@ -60,14 +60,7 @@ class Animal(ABC):
             raise ValueError('A vacina deve ser um objeto da classe Vacina.')
         
         self.__vacinas.append(vacina)
-
-
-    def nova_vacina(self, vacina):
-        if not isinstance(vacina, Vacina):
-            raise ValueError('A vacina deve ser um objeto da classe Vacina.')
-        
-        self.__vacinas.append(vacina)    
-
+ 
     def tem_vacinas_basicas(self):
         vacinas_basicas = ['raiva', 'leptospirose', 'hepatite infecciosa']
         vacinas_dadas = [vacina.nome for vacina in self.__vacinas]
