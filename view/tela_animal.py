@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import messagebox
 from tkinter import ttk
 
-class TelaPessoa:
+class TelaAnimal:
     def __init__(self, root):
         self.root = root
         self.opcao_selecionada = None
@@ -20,16 +20,12 @@ class TelaPessoa:
         tk.Label(self.root, text="Escolha uma operação:", font=("Times New Roman", 12), bg="#fdd9b9").pack(pady=5)
 
         opcoes = [
-            ("Incluir Doador", 1),
-            ("Incluir Adotante", 2),
-            ("Listar Doadores", 3),
-            ("Listar Adotantes", 4),
-            ("Buscar Pessoa", 5),
-            ("Alterar Doador", 6),
-            ("Alterar Adotante", 7),
-            ("Excluir Doador", 8),
-            ("Excluir Adotante", 9),
-            ("Retornar ao Menu Principal", 10)
+            ("Listar todos os animais", 1),
+            ("Listar animais disponíveis", 2),
+            ("Buscar animal por chip", 3),
+            ("Adicionar vacina", 4),
+            ("Remover animal", 5),
+            ("Retornar ao Menu Principal", 6)
         ]
 
         for i, (texto, valor) in enumerate(opcoes, start=1):  # 'i' é o número da opção
@@ -60,18 +56,20 @@ class TelaPessoa:
     def mostrar_mensagem(self, mensagem):
         messagebox.showinfo("Informação", mensagem)
 
-    def pega_dados_pessoa(self, tipo="doador"):
+    def pega_dados_animal(self, tipo=None):
         self.limpar_tela()
         dados = {}
+        if tipo is None:
+            tipo = self.seleciona_tipo_animal()
 
         tk.Label(self.root, text=f"Cadastro de {tipo.capitalize()}", font=("Times New Roman", 16), bg="#fdd9b9").pack(pady=10)
 
-        labels = ["CPF:", "Nome:", "Data de Nascimento (AAAA-MM-DD):", "Endereço:"]
-        campos = ["cpf", "nome", "data_nascimento", "endereco"]
+        labels = ["Chip:", "Nome:", "Raça:", "Vacinas"]
+        campos = ["chip", "nome", "raca", "vacinas"]
 
-        if tipo == "adotante":
-            labels += ["Tipo de Habitação:", "Tamanho da Habitação:", "Possui Animais? (Sim/Não):"]
-            campos += ["tipo_habitacao", "tamanho_habitacao", "possui_animais"]
+        if tipo == "cachorro":
+            labels += ["Porte:"]
+            campos += ["porte"]
 
         def configurar_opcao(opcao):
             opcao.config(
@@ -84,30 +82,24 @@ class TelaPessoa:
 
         for label, campo in zip(labels, campos):
             tk.Label(self.root, text=label, font=("Times New Roman", 12), bg="#fdd9b9").pack(pady=5)
-            if campo == "tipo_habitacao":
-                opcao_habitacao = tk.StringVar(self.root)
-                opcao_habitacao.set("Escolha...")  # Valor padrão
-                tipo_habitacao = tk.OptionMenu(self.root, opcao_habitacao, "Casa", "Apartamento")
-                configurar_opcao(tipo_habitacao)        
-                tipo_habitacao.pack(pady=5)
-                dados[campo] = opcao_habitacao
+            if campo == "porte":
+                opcao_porte = tk.StringVar(self.root)
+                opcao_porte.set("Escolha...")
+                tamanho_porte = tk.OptionMenu(self.root, opcao_porte, "Grande", "Médio", "Pequeno")
+                configurar_opcao(tamanho_porte)
+                tamanho_porte.pack(pady=5)
+                dados[campo] = opcao_porte
+            
+            elif campo == "vacinas":
+                vacinas_selecionadas = []    
+                vacinas_disponiveis = ["raiva", "leptospirose", "hepatite infecciosa", "cinomose", "parvovirose", "coronavirose"]
+                for vacina in vacinas_disponiveis:
+                    var = tk.BooleanVar()
+                    checkbox = tk.Checkbutton(self.root, text=vacina, variable=var)
+                    checkbox.pack(pady=3)
+                    vacinas_selecionadas.append((vacina, var))
+                dados[campo] = vacinas_selecionadas
 
-            elif campo == "tamanho_habitacao":
-                opcao_habitacao = tk.StringVar(self.root)
-                opcao_habitacao.set("Escolha...")
-                tamanho_habitacao = tk.OptionMenu(self.root, opcao_habitacao, "Grande", "Pequeno")
-                configurar_opcao(tamanho_habitacao)
-                tamanho_habitacao.pack(pady=5)
-                dados[campo] = opcao_habitacao
-
-            elif campo == "possui_animais":
-                opcao_animal = tk.StringVar(self.root)
-                opcao_animal.set("Escolha...")
-                tem_animal = tk.OptionMenu(self.root, opcao_animal, "Sim", "Não")
-                configurar_opcao(tem_animal)
-                tem_animal.pack(pady=5)
-                dados[campo] = opcao_animal
-                  
             else:
                 entrada = tk.Entry(self.root, font=("Times New Roman", 12))
                 entrada.pack(pady=5)
@@ -125,9 +117,15 @@ class TelaPessoa:
             if campos_vazios:
                 messagebox.showerror("Erro", f"Os seguintes campos são obrigatórios: {', '.join(campos_vazios)}.")
                 return
+            
+            vacinas_selecionadas_lista = [vacina for vacina, var in vacinas_selecionadas if var]
+            dados["vacinas"] = vacinas_selecionadas_lista
     
             for key, campo in dados.items():
-                dados[key] = campo.get()
+                if key != "vacinas":
+                    dados[key] = campo.get()
+
+            dados["tipo_animal"]= tipo        
             self.opcao_selecionada = dados
             self.root.quit()
 
@@ -160,15 +158,15 @@ class TelaPessoa:
         self.root.mainloop()
         return dados
 
-    def seleciona_pessoa(self):
+    def seleciona_animal(self):
         self.limpar_tela()
 
-        tk.Label(self.root, text="Digite o CPF da Pessoa:", font=("Times New Roman", 14), bg="#fdd9b9").pack(pady=10)
-        entrada_cpf = tk.Entry(self.root, font=("Times New Roman", 12))
-        entrada_cpf.pack(pady=10)
+        tk.Label(self.root, text="Digite o chip do animal:", font=("Times New Roman", 14), bg="#fdd9b9").pack(pady=10)
+        entrada_chip = tk.Entry(self.root, font=("Times New Roman", 12))
+        entrada_chip.pack(pady=10)
 
         def confirmar():
-            self.opcao_selecionada = entrada_cpf.get()
+            self.opcao_selecionada = entrada_chip.get()
             self.root.quit()
 
         def voltar():
@@ -205,7 +203,7 @@ class TelaPessoa:
             return "n"
 
     
-    def exibir_dados_pessoa(self, dados_pessoa, tipo):
+    def exibir_dados_animal(self, dados_animal, tipo):
         self.limpar_tela()
 
         titulo = f"Dados do {tipo.capitalize()}"
@@ -213,19 +211,16 @@ class TelaPessoa:
 
         # Exibe os dados básicos
         dados = [
-            "CPF: " + dados_pessoa["cpf"],
-            "Nome: " + dados_pessoa["nome"],
-            "Data de Nascimento: " + dados_pessoa["data_nascimento"],
-            "Endereço:  " + dados_pessoa["endereco"]
+            "Chip: " + dados_animal["chip"],
+            "Nome: " + dados_animal["nome"],
+            "Raça: " + dados_animal["raca"],
+            "Vacinas:  " + dados_animal["vacinas"]
         ]
 
         # Se for um adotante, exibe os dados adicionais
-        if tipo.lower() == "adotante":
-            possui_animais = "Sim" if dados_pessoa["possui_animais"] == True else "Não"
+        if tipo.lower() == "cachorro":
             dados += [
-                "Tipo de Habitação: " + dados_pessoa["tipo_habitacao"],
-                "Tamanho da Habitação:  " + dados_pessoa["tamanho_habitacao"],
-                "Possui Animais:  " + possui_animais
+                "Porte: " + dados_animal["porte"],
             ]
 
         self.mostrar_mensagem("\n".join(dados))
@@ -340,13 +335,13 @@ class TelaPessoa:
         self.root.mainloop()
         return dados
     
-    def exibir_dados_doadores(self, lista_doadores):
+    def exibir_dados_cachorro(self, lista_cachorros):
         self.limpar_tela()
-        titulo = "Lista de Doadores"
+        titulo = "Lista de Cachorros"
         tk.Label(self.root, text=titulo, font=("Times New Roman", 16), bg="#fdd9b9").pack(pady=10)
 
         # Criação do Treeview
-        colunas = ("CPF", "Nome", "Data de Nascimento", "Endereço")
+        colunas = ("Chip", "Nome", "Raça", "Porte", "Vacinas")
         tabela = ttk.Treeview(self.root, columns=colunas, show="headings", height=10)
 
         # Configurar cabeçalhos
@@ -355,8 +350,8 @@ class TelaPessoa:
             tabela.column(coluna, anchor="center", width=200)
 
         # Adicionar os dados à tabela
-        for pessoa in lista_doadores:
-            tabela.insert("", "end", values=(pessoa.cpf, pessoa.nome, pessoa.data_nascimento, pessoa.endereco))
+        for cachorro in lista_cachorros:
+            tabela.insert("", "end", values=(cachorro.chip, cachorro.nome, cachorro.raca, cachorro.porte, cachorro.vacinas))
 
         tabela.pack(pady=10, padx=10)
 

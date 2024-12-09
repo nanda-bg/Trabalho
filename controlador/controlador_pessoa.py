@@ -3,7 +3,6 @@ from DAO.adotante_dao import AdotanteDAO
 from DAO.doador_dao import DoadorDAO
 from entidade.adotante import Adotante
 from entidade.doador import Doador
-from view.tela_incluir_doador import TelaDoador
 from view.tela_pessoa import TelaPessoa
 
 
@@ -13,7 +12,6 @@ class ControladorPessoa():
         self.__doador_DAO = DoadorDAO()
         self.__root = root
         self.__controlador_sistema = controlador_sistema
-        self.__tela_doador = TelaDoador(root)
 
     @property
     def adotantes(self):
@@ -40,12 +38,10 @@ class ControladorPessoa():
         
         if self.buscar_pessoa(cpf) != None:
             if isinstance(self.buscar_pessoa(cpf), Adotante):
-                self.__tela_pessoa.mostrar_mensagem("CPF já cadastrado para um adotante")
-                self.__tela_pessoa.mostrar_mensagem("Doadores não podem ser adotantes, portanto ao alterar o cadastro para doador você não poderá mais adotar animais")
-                alterar = input("Deseja alterar o cadastro para doador? (s/n) ")
+                alterar = self.__tela_pessoa.alterar_cadastro()
 
                 if alterar == 's':
-                    self.__adotantes.remove(self.buscar_pessoa(cpf))
+                    self.__adotante_DAO.remove(self.buscar_pessoa(cpf))
 
                     doador = Doador(cpf, nome, data_nascimento, endereco)
                     self.__doador_DAO.add(doador)
@@ -106,29 +102,23 @@ class ControladorPessoa():
 
     def listar_doadores(self):
         if len(self.__doador_DAO.get_all()) == 0:
-            print()
             self.__tela_pessoa.mostrar_mensagem("Nenhum doador cadastrado")
             return
         
-        for doador in self.__doador_DAO.get_all():
-            print()
-            dados_doador = {"nome": doador.nome, "cpf": doador.cpf, "data_nascimento": doador.data_nascimento, "endereco": doador.endereco}
-            self.__tela_pessoa.exibir_dados_pessoa(dados_doador, "doador")
+        self.__tela_pessoa.exibir_dados_doadores(self.__doador_DAO.get_all())
+        
+        print("acabou")
 
-        return self.__doador_DAO
+        return self.__doador_DAO.get_all()
     
     def listar_adotantes(self):
         if len(self.__adotante_DAO.get_all()) == 0:
-            print()
             self.__tela_pessoa.mostrar_mensagem("Nenhum adotante cadastrado")
             return
         
-        for adotante in self.__adotante_DAO.get_all():
-            print()
-            dados_adotante = {"nome": adotante.nome, "cpf": adotante.cpf, "data_nascimento": adotante.data_nascimento, "endereco": adotante.endereco, "tipo_habitacao": adotante.tipo_habitacao, "tamanho_habitacao":adotante.tamanho_habitacao, "possui_animais": adotante.possui_animais}
-            self.__tela_pessoa.exibir_dados_pessoa(dados_adotante, "adotante")
+        self.__tela_pessoa.exibir_dados_adotantes(self.__adotante_DAO.get_all())
 
-        return self.__adotante_DAO
+        return self.__adotante_DAO.get_all()
 
     def buscar_pessoa(self, cpf = None):
         valor_inicial = cpf
@@ -315,7 +305,7 @@ class ControladorPessoa():
         lista_opcoes = {1: self.incluir_doador, 2: self.incluir_adotante, 3: self.listar_doadores, 
                         4: self.listar_adotantes, 5: self.buscar_pessoa, 6:self.alterar_doador, 
                         7: self.alterar_adotante, 8: self.excluir_doador, 9: self.excluir_adotante, 
-                        0: self.retornar}
+                        10: self.retornar}
 
         while True:
             opcao_escolhida = self.__tela_pessoa.mostrar_tela()
@@ -323,4 +313,4 @@ class ControladorPessoa():
             funcao_escolhida()
 
     def retornar(self):
-        self.__controlador_sistema.abrir_tela_inicial()
+        self.__controlador_sistema.inicializa_sistema()
