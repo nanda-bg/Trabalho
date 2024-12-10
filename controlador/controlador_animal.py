@@ -8,19 +8,19 @@ from limite.tela_vacina import TelaVacina
 
 
 class ControladorAnimal:
-    def __init__(self, controlador_sistema, root):
+    def __init__(self, controlador_sistema, root=None):
         self.__cachorro_DAO = CachorroDAO()
         self.__gato_DAO = GatoDAO()
-        self.todos_animais = []
         self.animais_disponiveis = []
         self.__tela_vacina = TelaVacina()
         self.__controlador_sistema = controlador_sistema
         self.__root = root
+        self.__tela_animal = TelaAnimal(self.__root)
 
     def adicionar_animal(self, chip = None, nome = None, raca = None, vacinas = None, tipo_animal = None, porte = None):
         if chip is None:
             dados_animal = self.__tela_animal.pega_dados_animal("cachorro")
-            print("dados_animal", dados_animal)
+            
             chip = dados_animal["chip"]
             nome = dados_animal["nome"]
             raca = dados_animal["raca"]
@@ -41,10 +41,10 @@ class ControladorAnimal:
             self.__cachorro_DAO.add(animal)
 
         else:    
+            print("Vacinas", vacinas)
+            print("Vacinas são do tipo: ", type(vacinas[0]))
             animal = Gato(chip, nome, raca, vacinas)
             self.__gato_DAO.add(animal)
-        
-        self.todos_animais.append(animal)
 
         if animal.tem_vacinas_basicas():
             self.animais_disponiveis.append(animal)
@@ -104,10 +104,53 @@ class ControladorAnimal:
         
         for animal in self.animais_disponiveis:
             self.__tela_animal.mostrar_mensagem(animal)
+        
+    def seleciona_animal(self):
+        chip = self.__tela_animal.valida_chip()
+        return chip
+
+    def buscar_animal(self, chip = None):
+        valor_inicial = chip
+
+        if chip == None:
+            chip = self.__tela_animal.seleciona_animal() 
+
+        for cachorro in self.__cachorro_DAO.get_all():
+            if cachorro.chip == chip:
+                if valor_inicial == None:
+                    dados_cachorro = {"porte": cachorro.porte, "nome":cachorro.nome, "chip": cachorro.chip, "raca": cachorro.raca, "vacinas": cachorro.vacinas} 
+                    self.__tela_animal.mostrar_animal(dados_cachorro)
+                return cachorro
+            
+        for gato in self.__gato_DAO.get_all():
+            if gato.chip == chip:
+                if valor_inicial == None:    
+                    dados_gato = {"nome":gato.nome, "chip": gato.chip, "raca": gato.raca, "vacinas": gato.vacinas} 
+                    self.__tela_animal.mostrar_animal(dados_gato)
+                return gato    
+              
+        if valor_inicial == None:      
+            self.__tela_animal.mostrar_mensagem("Animal não encontrado.")      
+        return None
+        
+    def alterar_animal(self):
+        dados = self.__tela_animal.pega_dados_alteração()
+
+        chip_original = dados["chip_original"]
+        animal = self.buscar_animal(chip_original)
+
+        novo_nome = dados["nome"]
+        novo_chip = dados["chip_novo"]
+
+        if novo_nome != None:
+            animal.nome = novo_nome
+
+        if novo_chip != None:
+            animal.chip = novo_chip    
+
+        return animal    
 
     def abrir_tela(self):
-        self.__tela_animal = TelaAnimal(self.__root)
-
         lista_opcoes = {1: self.listar_animais, 2: self.listar_animais_disponiveis, 3: self.buscar_animal, 
                         4: self.adicionar_vacina, 5: self.remover_animal, 6: self.retornar}
 
@@ -139,42 +182,3 @@ class ControladorAnimal:
 
     def retornar(self):
         self.__controlador_sistema.abrir_tela_inicial()
-        
-    def seleciona_animal(self):
-        chip = self.__tela_animal.valida_chip()
-        return chip
-
-    def buscar_animal(self, chip = None):
-        if chip == None:
-            chip = self.__tela_animal.seleciona_animal() 
-
-        for cachorro in self.__cachorro_DAO.get_all():
-            if cachorro.chip == chip:
-                dados_cachorro = {"porte": cachorro.porte, "nome":cachorro.nome, "chip": cachorro.chip, "raca": cachorro.raca, "vacinas": cachorro.vacinas} 
-                self.__tela_animal.mostrar_animal(dados_cachorro)
-                return cachorro
-            
-        for gato in self.__gato_DAO.get_all():
-            if gato.chip == chip:
-                dados_gato = {"nome":gato.nome, "chip": gato.chip, "raca": gato.raca, "vacinas": gato.vacinas} 
-                self.__tela_animal.mostrar_animal(dados_gato)
-                return gato    
-              
-        return None  
-        
-    def alterar_animal(self):
-        dados = self.__tela_animal.pega_dados_alteração()
-
-        chip_original = dados["chip_original"]
-        animal = self.buscar_animal(chip_original)
-
-        novo_nome = dados["nome"]
-        novo_chip = dados["chip_novo"]
-
-        if novo_nome != None:
-            animal.nome = novo_nome
-
-        if novo_chip != None:
-            animal.chip = novo_chip    
-
-        return animal    

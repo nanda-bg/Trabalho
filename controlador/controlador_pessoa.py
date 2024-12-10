@@ -12,6 +12,7 @@ class ControladorPessoa():
         self.__doador_DAO = DoadorDAO()
         self.__root = root
         self.__controlador_sistema = controlador_sistema
+        self.__tela_pessoa = TelaPessoa(self.__root)
 
     @property
     def adotantes(self):
@@ -300,8 +301,6 @@ class ControladorPessoa():
         return pessoa
 
     def abrir_tela(self):
-        self.__tela_pessoa = TelaPessoa(self.__root)
-
         lista_opcoes = {1: self.incluir_doador, 2: self.incluir_adotante, 3: self.listar_doadores, 
                         4: self.listar_adotantes, 5: self.buscar_pessoa, 6:self.alterar_doador, 
                         7: self.alterar_adotante, 8: self.excluir_doador, 9: self.excluir_adotante, 

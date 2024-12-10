@@ -11,7 +11,7 @@ class SistemaPessoas:
         self.__controlador_pessoa = ControladorPessoa(self, root)
         self.__controlador_adocao = ControladorAdocao(self)
         self.__controlador_animal = ControladorAnimal(self, root)
-        self.__controlador_doacao = ControladorDoacao(self)
+        self.__controlador_doacao = ControladorDoacao(self, root)
         self.__controlador_vacina = ControladorVacina(self)
         self.__tela_sistema = TelaSistema(root)
 

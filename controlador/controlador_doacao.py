@@ -1,30 +1,34 @@
 import datetime
+from DAO.doacao_dao import DoacaoDAO
 from entidade.doacao import Doacao
-from limite.tela_doacao import TelaDoacao
+from entidade.vacina import Vacina
+from view.tela_doacao import TelaDoacao
 
 
 class ControladorDoacao:
-    def __init__(self, controlador_sistema):
-        self.__doacoes = []
-        self.__tela_doacao = TelaDoacao()
+    def __init__(self, controlador_sistema, root):
+        self.__doacoes_DAO = DoacaoDAO()
+        self.__root = root
         self.__controlador_sistema = controlador_sistema
         self.__controlador_pessoa = controlador_sistema.controlador_pessoa
         self.__controlador_animal = controlador_sistema.controlador_animal
 
     def doar(self):
-        print()
         dados_doacao = self.__tela_doacao.pega_dados_doacao()
+        print("cpf do doador", dados_doacao["cpf_doador"])
+        if dados_doacao["cpf_doador"] is None:
+            return
+        
         doador = self.__controlador_pessoa.buscar_pessoa(dados_doacao["cpf_doador"])
 
         if doador is None:
-            print()
-            self.__tela_doacao.mostrar_mensagem("Doador não encontrado, cadastre o doador:")
+            self.__tela_doacao.mostrar_mensagem("Doador não encontrado, faça o cadastro.")
             doador = self.__controlador_sistema.controlador_pessoa.incluir_doador()
 
         chip = dados_doacao["chip_animal"]
         nome = dados_doacao["nome_animal"]
         raca = dados_doacao["raca_animal"]
-        vacinas = dados_doacao["vacinas_animal"]
+        vacinas = [Vacina(vacina) for vacina in dados_doacao["vacinas_animal"]]
         tipo_animal = dados_doacao["tipo_animal"]
 
         if tipo_animal == "cachorro":
@@ -37,14 +41,13 @@ class ControladorDoacao:
         motivo_doacao = dados_doacao["motivo_doacao"]
 
         doacao = Doacao(animal, doador, motivo_doacao)
-        self.__doacoes.append(doacao)
-        print()
+        self.__doacoes_DAO.add(doacao)
         self.__tela_doacao.mostrar_mensagem("Doação realizada com sucesso.")
         return doacao
 
     def emitir_relatorio_doacoes(self):
-        print()
         datas = self.__tela_doacao.pega_datas_relatorio()
+        print("datas", datas)
 
         formato_data = "%Y-%m-%d"
 
@@ -54,18 +57,15 @@ class ControladorDoacao:
 
         doacoes = [doacao for doacao in self.__doacoes if inicio <= datetime.datetime.strptime(doacao.data, formato_data) <= fim]
         if len(doacoes) == 0:
-            print()
             self.__tela_doacao.mostrar_mensagem(
                 "Nenhuma doação realizada nesse período"
             )
             return
         
-        print()
         self.__tela_doacao.mostrar_mensagem("-------- RELATÓRIO ---------")
         for doacao in doacoes:
             dados_doacao = {"nome_doador": doacao.doador.nome, "cpf": doacao.doador.cpf, "nome_animal": doacao.animal.nome, "chip": doacao.animal.chip, "data": doacao.data}
             self.__tela_doacao.mostrar_doacao(dados_doacao)
-            print()
 
         return doacoes
     
@@ -74,22 +74,18 @@ class ControladorDoacao:
 
         for doacao in self.__doacoes:
             if doacao.animal.chip == chip_animal:
-                print()
                 self.__tela_doacao.mostrar_doacao(doacao)
-                print()
                 confirma = input("Tem certeza que deseja excluir a doação? (s/n) ")
 
                 if confirma.lower() == "s":
                     self.__doacoes.remove(doacao)
-                    print()
                     self.__tela_doacao.mostrar_mensagem(f"Doação do animal com o chip {chip_animal} foi excluída.")
 
                 else:
                     self.__tela_doacao.mostrar_mensagem("Operação cancelada.")
 
                 return
-
-        print()
+        
         self.__tela_doacao.mostrar_mensagem(f"Nenhuma doação encontrada com o chip {chip_animal}.")
         return
     
@@ -101,7 +97,6 @@ class ControladorDoacao:
 
         doacao = self.buscar_doacao(chip_animal)
         if doacao is None:
-            print()
             self.__tela_doacao.mostrar_mensagem("Doação não encontrada.")
             return None
 
@@ -112,7 +107,6 @@ class ControladorDoacao:
             doador = self.__controlador_sistema.controlador_pessoa.buscar_pessoa(cpf_doador)
 
             if doador is None:
-                print()
                 confirma = input("O novo doador não existe, deseja cadastrar? (s/n) ")
 
                 if confirma.lower() == "s":
@@ -130,7 +124,6 @@ class ControladorDoacao:
             novo_animal = self.__controlador_sistema.controlador_animal.buscar_animal(novo_animal)
 
             if novo_animal is None:
-                print()
                 confirma = input("O novo animal não existe, deseja cadastrar? (s/n) ")
 
                 if confirma.lower() == "s":
@@ -149,8 +142,7 @@ class ControladorDoacao:
         novo_motivo = dados["motivo_doacao"]
         if novo_motivo is not None:
             doacao.motivo_doacao = novo_motivo
-
-        print()
+        
         self.__tela_doacao.mostrar_mensagem("Doação alterada com sucesso.")
         return doacao
 
@@ -163,16 +155,18 @@ class ControladorDoacao:
         return None
 
     def abrir_tela(self):
+        self.__tela_doacao = TelaDoacao(self.__root)
+
         lista_opcoes = {
             1: self.doar,
             2: self.emitir_relatorio_doacoes,
             3: self.excluir_doacao,
             4: self.alterar_doacao,
-            0: self.retornar,
+            5: self.retornar,
         }
 
         while True:
-            opcao_escolhida = self.__tela_doacao.tela_opcoes()
+            opcao_escolhida = self.__tela_doacao.mostrar_tela()
             funcao_escolhida = lista_opcoes[opcao_escolhida]
             funcao_escolhida()
 
