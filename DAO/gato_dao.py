@@ -1,7 +1,7 @@
 from DAO.dao import DAO
 from entidade.gato import Gato
 
-#cada entidade terá uma classe dessa, implementação bem simples.
+
 class GatoDAO(DAO):
     def __init__(self):
         super().__init__('gato.pkl')

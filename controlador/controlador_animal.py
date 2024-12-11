@@ -51,7 +51,7 @@ class ControladorAnimal:
 
         return animal
     
-    def remover_animal(self, animal):
+    def remover_animal(self, animal = None):
         if animal not in self.todos_animais:
             raise ValueError("animal não pertence a ONG")
 

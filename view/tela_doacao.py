@@ -1,5 +1,4 @@
 from tkcalendar import Calendar
-import datetime
 import tkinter as tk
 from tkinter import messagebox
 from tkinter import ttk
@@ -197,7 +196,7 @@ class TelaDoacao:
         return dados
 
 
-    def pega_datas_relatorio(root):
+    def pega_datas_relatorio(self):
         def abrir_calendario(entry):
             def confirmar_data():
                 data_selecionada = calendario.get_date()
@@ -205,7 +204,7 @@ class TelaDoacao:
                 entry.insert(0, data_selecionada)
                 janela_calendario.destroy()
 
-            janela_calendario = tk.Toplevel(root)
+            janela_calendario = tk.Toplevel()
             janela_calendario.title("Selecionar Data")
             calendario = Calendar(janela_calendario, date_pattern="yyyy-mm-dd")
             calendario.pack(pady=10)
@@ -224,7 +223,7 @@ class TelaDoacao:
         datas = {}
 
         # Janela de seleção
-        janela_relatorio = tk.Toplevel(root)
+        janela_relatorio = tk.Toplevel()
         janela_relatorio.title("Selecionar Datas")
         janela_relatorio.geometry("300x200")
         janela_relatorio.configure(bg="#fdd9b9")
@@ -241,20 +240,20 @@ class TelaDoacao:
 
         tk.Button(janela_relatorio, text="Confirmar", command=confirmar, bg="#ff7e0e", fg="white").pack(pady=20)
 
-        root.wait_window(janela_relatorio)  # Aguarda o fechamento da janela_relatorio
+        self.root.wait_window(janela_relatorio)  # Aguarda o fechamento da janela_relatorio
         print("datas:", datas)
         return datas
 
 
-    def seleciona_pessoa(self):
+    def seleciona_animal(self):
         self.limpar_tela()
 
-        tk.Label(self.root, text="Digite o CPF da Pessoa:", font=("Times New Roman", 14), bg="#fdd9b9").pack(pady=10)
-        entrada_cpf = tk.Entry(self.root, font=("Times New Roman", 12))
-        entrada_cpf.pack(pady=10)
+        tk.Label(self.root, text="Digite o chip do animal envolvido na doação:", font=("Times New Roman", 14), bg="#fdd9b9").pack(pady=10)
+        entrada_chip = tk.Entry(self.root, font=("Times New Roman", 12))
+        entrada_chip.pack(pady=10)
 
         def confirmar():
-            self.opcao_selecionada = entrada_cpf.get()
+            self.opcao_selecionada = int(entrada_chip.get())
             self.root.quit()
 
         def voltar():
@@ -283,8 +282,15 @@ class TelaDoacao:
         self.root.mainloop()
         return self.opcao_selecionada
     
-    def alterar_cadastro(self):
-        resposta = messagebox.askquestion("CPF já cadastrado para um adotante", "Doadores não podem ser adotantes, portanto ao alterar o cadastro para doador você não poderá mais adotar animais, deseja alterar seu cadastro?")
+    def confirmar_exclusão(self, doacao):
+        resposta = messagebox.askquestion("Confirme a exclusão", f"Tem certeza que deseja excluir a doação do animal {doacao.animal.nome}?", icon="warning")
+        if resposta == "yes":
+            return "s"
+        else:
+            return "n"
+
+    def deseja_cadastrar_doador(self):
+        resposta = messagebox.askquestion("Doador não encontrado", "O novo doador não existe, deseja cadastrar?")
         if resposta == "yes":
             return "s"
         else:
@@ -326,80 +332,31 @@ class TelaDoacao:
             width=30
         ).pack(pady=20)
 
-    def pega_dados_alteracao(self, tipo="doador"):     
+    def pega_dados_alteracao(self):     
         self.limpar_tela()
         dados = {}
 
-        tk.Label(self.root, text=f"Alteração de {tipo.capitalize()}", font=("Times New Roman", 16), bg="#fdd9b9").pack(pady=10)
+        tk.Label(self.root, text=f"Alteração de Doação", font=("Times New Roman", 16), bg="#fdd9b9").pack(pady=10)
 
-        labels = ["CPF: ", "Nome:", "Endereço:"]
-        campos = ["cpf", "nome", "endereco"]
-
-        if tipo == "adotante":
-            labels += ["Tipo de Habitação:", "Tamanho da Habitação:", "Possui Animais?:"]
-            campos += ["tipo_habitacao", "tamanho_habitacao", "possui_animais"]
-
-        def configurar_opcao(opcao):
-            opcao.config(
-                font=("Times New Roman", 12),   
-                bg="white",                
-                fg="black",                  
-                relief="solid",                 
-                width=15                       
-            )   
+        labels = ["Alterar doador (CPF): ", "Alterar animal (chip): ", "Alterar motivo da doação: "]
+        campos = ["cpf", "animal", "motivo_doacao"]
 
         for label, campo in zip(labels, campos):
             tk.Label(self.root, text=label, font=("Times New Roman", 12), bg="#fdd9b9").pack(pady=5)
-            if campo == "tipo_habitacao":
-                opcao_habitacao = tk.StringVar(self.root)
-                opcao_habitacao.set("Escolha...") 
-                tipo_habitacao = tk.OptionMenu(self.root, opcao_habitacao, "Casa", "Apartamento")
-                configurar_opcao(tipo_habitacao)        
-                tipo_habitacao.pack(pady=5)
-                dados[campo] = opcao_habitacao
-                print("tipo_habitacao", opcao_habitacao)
-
-            elif campo == "tamanho_habitacao":
-                opcao_habitacao = tk.StringVar(self.root)
-                opcao_habitacao.set("Escolha...")
-                tamanho_habitacao = tk.OptionMenu(self.root, opcao_habitacao, "Grande", "Pequeno")
-                configurar_opcao(tamanho_habitacao)
-                tamanho_habitacao.pack(pady=5)
-                dados[campo] = opcao_habitacao.get()
-                print("tamanho_habitacao", opcao_habitacao)
-
-            elif campo == "possui_animais":
-                opcao_animal = tk.StringVar(self.root)
-                opcao_animal.set("Escolha...")
-                tem_animal = tk.OptionMenu(self.root, opcao_animal, "Sim", "Não")
-                configurar_opcao(tem_animal)
-                tem_animal.pack(pady=5)
-                dados[campo] = opcao_animal.get()
-                print("possui animais campo get:", opcao_animal.get())
-                  
-            else:
-                entrada = tk.Entry(self.root, font=("Times New Roman", 12))
-                entrada.pack(pady=5)
+            entrada = tk.Entry(self.root, font=("Times New Roman", 12))
+            entrada.pack(pady=5)
             dados[campo] = entrada 
 
         def confirmar():
-            campos_vazios = []
-
             for key, campo in dados.items():
                 valor = campo if campo else None
                 print("valor:", valor)
                 dados[key] = valor
-    
-            for key, campo in dados.items():
-                print("key:", key)
-                print("campo:", campo)
-                dados[key] = campo.get()
+
             self.opcao_selecionada = dados
             self.root.quit()
 
         def voltar():
-            for key in dados:
-                dados[key] = None
             self.opcao_selecionada = None
             self.root.quit()
 
@@ -426,13 +383,13 @@ class TelaDoacao:
         self.root.mainloop()
         return dados
     
-    def exibir_dados_doadores(self, lista_doadores):
+    def exibir_dados_doacoes(self, lista_doacoes):
         self.limpar_tela()
-        titulo = "Lista de Doadores"
+        titulo = "Relatório de Doações"
         tk.Label(self.root, text=titulo, font=("Times New Roman", 16), bg="#fdd9b9").pack(pady=10)
 
         # Criação do Treeview
-        colunas = ("CPF", "Nome", "Data de Nascimento", "Endereço")
+        colunas = ("Data", "Animal", "Doador", "Motivo")
         tabela = ttk.Treeview(self.root, columns=colunas, show="headings", height=10)
 
         # Configurar cabeçalhos
@@ -441,8 +398,8 @@ class TelaDoacao:
             tabela.column(coluna, anchor="center", width=200)
 
         # Adicionar os dados à tabela
-        for pessoa in lista_doadores:
-            tabela.insert("", "end", values=(pessoa.cpf, pessoa.nome, pessoa.data_nascimento, pessoa.endereco))
+        for doacao in lista_doacoes:
+            tabela.insert("", "end", values=(doacao.data, doacao.animal.nome, doacao.doador.nome, doacao.motivo_doacao))
 
         tabela.pack(pady=10, padx=10)
 
