@@ -1,10 +1,19 @@
+from datetime import datetime
+import re
 from tkcalendar import Calendar
 import tkinter as tk
 from tkinter import messagebox
 from tkinter import ttk
 
-class TelaAdocao:
+from exception.camposVaziosException import CampoVaziosException
+from exception.chipInvalidoException import ChipInvalidoException
+from exception.cpfInvalidoException import CPFInvalidoException
+from exception.dataFinalInvalidaException import DataFinalInvalida
+from view.abstract_tela import AbstractTela
+
+class TelaAdocao(AbstractTela):
     def __init__(self, root):
+        super().__init__()
         self.root = root
         self.opcao_selecionada = None
         self.root.title("Gerenciamento de Doações")
@@ -83,16 +92,6 @@ class TelaAdocao:
         labels = ["CPF do adotante:", "Chip do Animal:"]
         campos = ["cpf_adotante", "chip_animal"]
 
-        def configurar_opcao(opcao):
-            opcao.config(
-                font=("Times New Roman", 12),
-                bg="white",
-                fg="black",
-                relief="solid",
-                width=15
-            )
-
-        # Loop para criar os elementos da interface
         for label, campo in zip(labels, campos):
             tk.Label(central_frame, text=label, font=("Times New Roman", 12), bg="#fdd9b9").pack(pady=5)
             entrada = tk.Entry(central_frame, font=("Times New Roman", 12))
@@ -100,22 +99,31 @@ class TelaAdocao:
             dados[campo] = entrada
 
         def confirmar():
-            campos_vazios = []
+            try: 
+                campos_vazios = []
 
-            for key, campo in dados.items():
-                if not campo:
-                    campos_vazios.append(key)
-                dados[key] = campo
+                for key, campo in dados.items():
+                    if not campo:
+                        campos_vazios.append(key)
+                    dados[key] = campo
 
-            if campos_vazios:
-                messagebox.showerror("Erro", f"Os seguintes campos são obrigatórios: {', '.join(campos_vazios)}.")
-                return
-    
-            for key, campo in dados.items():
-                dados[key] = campo.get()
+                if campos_vazios:
+                    raise CampoVaziosException(campos_vazios)
+                
+                if not dados["cpf_adotante"].get().isdigit() or len(dados["cpf_adotante"].get()) != 11 or not self.validar_numeros_cpf(dados["cpf_adotante"].get()):
+                    raise CPFInvalidoException()
+                
+                if not dados["chip_animal"].get().isdigit() or len(dados["chip_animal"].get()) != 7:
+                    raise ChipInvalidoException()
+        
+                for key, campo in dados.items():
+                    dados[key] = campo.get()
 
-            self.opcao_selecionada = dados
-            self.root.quit()
+                self.opcao_selecionada = dados
+                self.root.quit()
+
+            except Exception as e:
+                self.mostrar_mensagem(e)    
 
         def voltar():
             for key in dados:
@@ -161,14 +169,36 @@ class TelaAdocao:
             tk.Button(janela_calendario, text="Confirmar", command=confirmar_data).pack(pady=10)
 
         def confirmar():
-            data_inicio = entrada_inicio.get()
-            data_fim = entrada_fim.get()
-            if not data_inicio or not data_fim:
-                messagebox.showerror("Erro", "Ambas as datas devem ser preenchidas.")
-                return
-            datas["inicio"] = data_inicio
-            datas["fim"] = data_fim
-            janela_relatorio.destroy()
+            try:
+                campos_vazios = []
+
+                data_inicio = entrada_inicio.get()
+                data_fim = entrada_fim.get()
+
+                if not data_inicio:
+                    campos_vazios.append("Data de Início")
+
+                if not data_fim:
+                    campos_vazios.append("Data de Fim")
+
+                if campos_vazios:
+                    raise CampoVaziosException(campos_vazios)
+
+                data_inicio_obj = datetime.strptime(data_inicio, "%Y-%m-%d").date()
+                data_fim_obj = datetime.strptime(data_fim, "%Y-%m-%d").date()
+
+                if data_inicio_obj > data_fim_obj:      
+                    raise DataFinalInvalida()
+                    
+                datas["inicio"] = data_inicio
+                datas["fim"] = data_fim
+
+                janela_relatorio.destroy()
+
+            except Exception as e:
+                self.mostrar_mensagem(e)
+
+
 
         datas = {}
 
@@ -191,7 +221,6 @@ class TelaAdocao:
         tk.Button(janela_relatorio, text="Confirmar", command=confirmar, bg="#ff7e0e", fg="white").pack(pady=20)
 
         self.root.wait_window(janela_relatorio)  # Aguarda o fechamento da janela_relatorio
-        print("datas:", datas)
         return datas
 
 
@@ -203,8 +232,18 @@ class TelaAdocao:
         entrada_chip.pack(pady=10)
 
         def confirmar():
-            self.opcao_selecionada = int(entrada_chip.get())
-            self.root.quit()
+            try:
+                chip = entrada_chip.get()
+
+                if not chip.isdigit() or len(chip) != 7:
+                    raise ChipInvalidoException()
+                
+                self.opcao_selecionada = int(entrada_chip.get())
+                self.root.quit()
+
+            except ChipInvalidoException as e:
+                self.mostrar_mensagem(e)
+            
 
         def voltar():
             self.opcao_selecionada = None
@@ -239,18 +278,18 @@ class TelaAdocao:
         else:
             return "n"
         
-    def deseja_assinar_termo(self, adocao):
-        resposta = messagebox.askquestion("Finalize a adoção", f"Deseja ir para o termo de adoção do animal {adocao.animal.nome}?")
+    def deseja_assinar_termo(self, dados_adocao):
+        resposta = messagebox.askquestion("Finalize a adoção", f"Deseja ir para o termo de adoção do animal {dados_adocao['nome_animal']}?")
         if resposta == "yes":
             return "s"
         else:
             return "n"    
         
-    def assinar_termo(self, adocao):
+    def assinar_termo(self, dados_adocao):
         resposta = messagebox.askquestion("Assine o termo de adoção", 
-                                          f"Eu, {adocao.adotante.nome}, portador do CPF {adocao.adotante.cpf}, "
-                                          f"declaro que irei adotar o animal {adocao.animal.nome}, "
-                                          f"portador do chip {adocao.animal.chip}, "
+                                          f"Eu, {dados_adocao['nome_adotante']}, portador do CPF {dados_adocao['cpf_adotante']}, "
+                                          f"declaro que irei adotar o animal {dados_adocao['nome_animal']}, "
+                                          f"portador do chip {dados_adocao['chip_animal']}, "
                                           f"e me comprometo a cuidar dele com responsabilidade, amor e carinho.")
         if resposta == "yes":
             return "s"
@@ -268,10 +307,10 @@ class TelaAdocao:
         self.limpar_tela()
         dados = {}
 
-        tk.Label(self.root, text=f"Alteração de Doação", font=("Times New Roman", 16), bg="#fdd9b9").pack(pady=10)
+        tk.Label(self.root, text=f"Alteração de Adoção", font=("Times New Roman", 16), bg="#fdd9b9").pack(pady=10)
 
-        labels = ["Alterar doador (CPF): ", "Alterar animal (chip): ", "Alterar motivo da doação: "]
-        campos = ["cpf", "animal", "motivo_doacao"]
+        labels = ["Alterar adotante (CPF): ", "Alterar animal (chip): "]
+        campos = ["cpf", "animal"]
 
         for label, campo in zip(labels, campos):
             tk.Label(self.root, text=label, font=("Times New Roman", 12), bg="#fdd9b9").pack(pady=5)
@@ -280,14 +319,26 @@ class TelaAdocao:
             dados[campo] = entrada 
 
         def confirmar():
-            for key, campo in dados.items():
-                valor = campo.get() if campo else None
-                dados[key] = valor
+            try: 
+                for key, campo in dados.items():
+                    valor = campo.get() if campo else None
+                    dados[key] = valor
 
-            self.opcao_selecionada = dados
-            self.root.quit()
+                if dados["cpf"] and (not dados["cpf"].isdigit() or len(dados["cpf"]) != 11) or not self.validar_numeros_cpf(dados["cpf"].get()):
+                    raise CPFInvalidoException()
+                
+                if dados["animal"] and (not dados["animal"].isdigit() or len(dados["animal"]) != 7):
+                    raise ChipInvalidoException()
+
+                self.opcao_selecionada = dados
+                self.root.quit()
+
+            except Exception as e:
+                self.mostrar_mensagem(e)    
 
         def voltar():
+            for key in dados:
+                dados[key] = None
             self.opcao_selecionada = None
             self.root.quit()
 
@@ -330,7 +381,11 @@ class TelaAdocao:
 
         # Adicionar os dados à tabela
         for adocao in lista_adocoes:
-            tabela.insert("", "end", values=(adocao.data, adocao.animal.nome, adocao.adotante.nome, adocao.termo_assinado))
+            tabela.insert("", "end", values=(
+                adocao["Data"],
+                adocao["Animal"],
+                adocao["Adotante"],
+                "Sim" if adocao["Finalizado"] else "Não"))
 
         tabela.pack(pady=10, padx=10)
 

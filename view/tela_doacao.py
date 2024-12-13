@@ -1,10 +1,21 @@
+from datetime import datetime
 from tkcalendar import Calendar
 import tkinter as tk
 from tkinter import messagebox
 from tkinter import ttk
 
-class TelaDoacao:
+from exception.camposVaziosException import CampoVaziosException
+from exception.chipInvalidoException import ChipInvalidoException
+from exception.cpfInvalidoException import CPFInvalidoException
+from exception.dataFinalInvalidaException import DataFinalInvalida
+from exception.motivo_invalido_exception import MotivoInvalidoException
+from exception.nomeInvalidoException import NomeInvalidoException
+from exception.raca_invalida_exception import RacaInvalidaException
+from view.abstract_tela import AbstractTela
+
+class TelaDoacao(AbstractTela):
     def __init__(self, root):
+        super().__init__()
         self.root = root
         self.opcao_selecionada = None
         self.root.title("Gerenciamento de Doações")
@@ -144,27 +155,44 @@ class TelaDoacao:
                 dados[campo] = entrada
 
         def confirmar():
-            campos_vazios = []
+            try:    
+                campos_vazios = []
 
-            for key, campo in dados.items():
-                if not campo:
-                    campos_vazios.append(key)
-                elif key == "vacinas_animal":
-                    dados[key] = [vacina for vacina, var in campo if var.get()]
-                dados[key] = campo
+                for key, campo in dados.items():
+                    if not campo:
+                        campos_vazios.append(key)
+                    elif key == "vacinas_animal":
+                        dados[key] = [vacina for vacina, var in campo if var.get()]
+                    dados[key] = campo
 
-            if campos_vazios:
-                messagebox.showerror("Erro", f"Os seguintes campos são obrigatórios: {', '.join(campos_vazios)}.")
-                return
-    
-            for key, campo in dados.items():
-                if key == "vacinas_animal":
-                    dados[key] = [vacina for vacina, var in campo if var.get()]
-                else:    
-                    dados[key] = campo.get()
+                if campos_vazios:
+                    raise CampoVaziosException(campos_vazios)
+                
+                if not dados["cpf"].isDigit() or dados["cpf"].length() != 11 or not self.validar_numeros_cpf(dados["cpf"].get()):
+                    raise CPFInvalidoException()
+                
+                if not dados["chip"].isDigit() or dados["chip"].length() != 7:
+                    raise ChipInvalidoException()
+                
+                if dados["nome_animal"].length < 3:
+                    raise NomeInvalidoException()
+                
+                if dados["raca_animal"].length < 3:
+                    raise RacaInvalidaException()
+                
+                if dados["motivo_doacao"].length < 3:
+                    raise MotivoInvalidoException()
+        
+                for key, campo in dados.items():
+                    if key == "vacinas_animal":
+                        dados[key] = [vacina for vacina, var in campo if var.get()]
+                    else:    
+                        dados[key] = campo.get()
 
-            self.opcao_selecionada = dados
-            self.root.quit()
+                self.opcao_selecionada = dados
+                self.root.quit()
+            except Exception as e:
+                self.mostrar_mensagem(e)    
 
         def voltar():
             for key in dados:
@@ -211,14 +239,34 @@ class TelaDoacao:
             tk.Button(janela_calendario, text="Confirmar", command=confirmar_data).pack(pady=10)
 
         def confirmar():
-            data_inicio = entrada_inicio.get()
-            data_fim = entrada_fim.get()
-            if not data_inicio or not data_fim:
-                messagebox.showerror("Erro", "Ambas as datas devem ser preenchidas.")
-                return
-            datas["inicio"] = data_inicio
-            datas["fim"] = data_fim
-            janela_relatorio.destroy()
+            try:
+                campos_vazios = []
+
+                data_inicio = entrada_inicio.get()
+                data_fim = entrada_fim.get()
+
+                if not data_inicio:
+                    campos_vazios.append("Data de Início")
+
+                if not data_fim:
+                    campos_vazios.append("Data de Fim")
+
+                if campos_vazios:
+                    raise CampoVaziosException(campos_vazios)
+
+                data_inicio_obj = datetime.strptime(data_inicio, "%Y-%m-%d").date()
+                data_fim_obj = datetime.strptime(data_fim, "%Y-%m-%d").date()
+
+                if data_inicio_obj > data_fim_obj:      
+                    raise DataFinalInvalida()
+                    
+                datas["inicio"] = data_inicio
+                datas["fim"] = data_fim
+
+                janela_relatorio.destroy()
+
+            except Exception as e:
+                self.mostrar_mensagem(e)
 
         datas = {}
 
@@ -241,7 +289,6 @@ class TelaDoacao:
         tk.Button(janela_relatorio, text="Confirmar", command=confirmar, bg="#ff7e0e", fg="white").pack(pady=20)
 
         self.root.wait_window(janela_relatorio)  # Aguarda o fechamento da janela_relatorio
-        print("datas:", datas)
         return datas
 
 
@@ -253,8 +300,17 @@ class TelaDoacao:
         entrada_chip.pack(pady=10)
 
         def confirmar():
-            self.opcao_selecionada = int(entrada_chip.get())
-            self.root.quit()
+            try:
+                chip = entrada_chip.get()
+
+                if not chip.isdigit() or len(chip) != 7:
+                    raise ChipInvalidoException()
+                
+                self.opcao_selecionada = int(entrada_chip.get())
+                self.root.quit()
+                
+            except ChipInvalidoException as e:
+                self.mostrar_mensagem(e)
 
         def voltar():
             self.opcao_selecionada = None
@@ -282,15 +338,15 @@ class TelaDoacao:
         self.root.mainloop()
         return self.opcao_selecionada
     
-    def confirmar_exclusão(self, doacao):
-        resposta = messagebox.askquestion("Confirme a exclusão", f"Tem certeza que deseja excluir a doação do animal {doacao.animal.nome}?", icon="warning")
+    def confirmar_exclusão(self, dados_doacao):
+        resposta = messagebox.askquestion("Confirme a exclusão", f"Tem certeza que deseja excluir a doação do animal {dados_doacao['nome_animal']}?", icon="warning")
         if resposta == "yes":
             return "s"
         else:
             return "n"
 
     def deseja_cadastrar_doador(self):
-        resposta = messagebox.askquestion("Doador não encontrado", "O novo doador não existe, deseja cadastrar?")
+        resposta = messagebox.askquestion("Doador não encontrado", "O doador não existe, deseja cadastrar?")
         if resposta == "yes":
             return "s"
         else:
@@ -362,7 +418,12 @@ class TelaDoacao:
 
         # Adicionar os dados à tabela
         for doacao in lista_doacoes:
-            tabela.insert("", "end", values=(doacao.data, doacao.animal.nome, doacao.doador.nome, doacao.motivo_doacao))
+            tabela.insert("", "end", values=(
+                doacao["Data"], 
+                doacao["Animal"], 
+                doacao["Doador"], 
+                doacao["Motivo"]
+                ))
 
         tabela.pack(pady=10, padx=10)
 

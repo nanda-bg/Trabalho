@@ -51,5 +51,4 @@ class TelaSistema:
         self.create_widgets()
         self.opcao_selecionada = None
         self.root.mainloop()
-        print(self.opcao_selecionada)
         return self.opcao_selecionada

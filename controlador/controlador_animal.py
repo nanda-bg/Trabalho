@@ -64,12 +64,10 @@ class ControladorAnimal:
 
         if vacinas == None:
             vacinas = self.__tela_animal.pega_dados_vacina()  
-            print("vacinas: ", vacinas)
 
         vacinas_selecionadas = [vacina for vacina, var in vacinas["vacinas"] if var.get()]    
 
         for vacina in vacinas_selecionadas: 
-            print("vacina: ", vacina)
             if vacina not in animal.vacinas:
                 animal.vacinas.append(Vacina(vacina))
 
@@ -94,10 +92,18 @@ class ControladorAnimal:
         if len(todos_animais) < 1:
             self.__tela_animal.mostrar_mensagem("Nenhum animal cadastrado")
             return
-        
-        print("todos animais: ", todos_animais[0].vacinas)
-        
-        self.__tela_animal.exibir_dados_animais(todos_animais)
+
+        animais_dict = [
+                {
+                    "Chip": animal.chip,
+                    "Nome": animal.nome,
+                    "Raça": animal.raca,
+                    "Vacinas": ", ".join(vacina.nome for vacina in animal.vacinas) if animal.vacinas else "Nenhuma vacina registrada."
+                }
+                for animal in todos_animais
+            ]
+
+        self.__tela_animal.exibir_dados_animais(animais_dict)
 
         return todos_animais
     
@@ -108,7 +114,17 @@ class ControladorAnimal:
             self.__tela_animal.mostrar_mensagem("Nenhum animal disponível")
             return
         
-        self.__tela_animal.exibir_dados_animais(animais_disponiveis)
+        animais_dict = [
+                {
+                    "Chip": animal.chip,
+                    "Nome": animal.nome,
+                    "Raça": animal.raca,
+                    "Vacinas": ", ".join(vacina.nome for vacina in animal.vacinas) if animal.vacinas else "Nenhuma vacina registrada."
+                }
+                for animal in animais_disponiveis
+            ]
+
+        self.__tela_animal.exibir_dados_animais(animais_dict)
 
         return animais_disponiveis
 
@@ -121,11 +137,10 @@ class ControladorAnimal:
 
         for animal in todos_animais:
             vacinas_dadas = [vacina.nome.lower() for vacina in animal.vacinas]
-
-            for vacina in vacinas_basicas:
-                if vacina not in vacinas_dadas:
-                    break
-            animais_com_vacinas.append(animal)
+            
+            # Verifica se todas as vacinas básicas estão presentes
+            if all(vacina in vacinas_dadas for vacina in vacinas_basicas):
+                animais_com_vacinas.append(animal)
 
         return animais_com_vacinas
         
@@ -136,7 +151,6 @@ class ControladorAnimal:
 
     def buscar_animal(self, chip = None):
         valor_inicial = chip
-        print("valor inicial", valor_inicial)
 
         if chip == None:
             chip = self.__tela_animal.seleciona_animal() 
@@ -160,24 +174,7 @@ class ControladorAnimal:
                 
             if valor_inicial == None:      
                 self.__tela_animal.mostrar_mensagem("Animal não encontrado.")      
-        return None
-        
-    def alterar_animal(self):
-        dados = self.__tela_animal.pega_dados_alteração()
-
-        chip_original = dados["chip_original"]
-        animal = self.buscar_animal(chip_original)
-
-        novo_nome = dados["nome"]
-        novo_chip = dados["chip_novo"]
-
-        if novo_nome != None:
-            animal.nome = novo_nome
-
-        if novo_chip != None:
-            animal.chip = novo_chip    
-
-        return animal    
+        return None   
 
     def abrir_tela(self):
         lista_opcoes = {1: self.listar_animais, 2: self.listar_animais_disponiveis, 3: self.buscar_animal, 

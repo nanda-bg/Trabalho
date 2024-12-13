@@ -29,16 +29,22 @@ class ControladorAdocao:
             )
             return
 
-        self.__tela_adocao.exibir_dados_adocoes(adocoes)
+
+        adocoes_dict = [
+        {
+            "Data": adocao.data,
+            "Animal": adocao.animal.nome,
+            "Adotante": adocao.adotante.nome,
+            "Finalizado": adocao.termo_assinado,
+        }
+        for adocao in adocoes
+    ]
+
+        self.__tela_adocao.exibir_dados_adocoes(adocoes_dict)
 
         return adocoes
 
     def avaliar_adocao(self, animal, adotante):
-        print("animal adocao", animal)
-        print("adotante adocao", adotante)
-        print("isinstance", isinstance(animal, Cachorro))
-
-
         if isinstance(animal, Cachorro):
             if animal.porte == "grande" and (
                 adotante.tipo_habitacao == "apartamento"
@@ -49,11 +55,8 @@ class ControladorAdocao:
         vacinas_basicas = ['raiva', 'leptospirose', 'hepatite infecciosa']
         vacinas_dadas = [vacina.nome.lower() for vacina in animal.vacinas]
 
-        print("vacinas_dadas", vacinas_dadas)
-
         for vacina in vacinas_basicas:
             if vacina not in vacinas_dadas:
-                print("vacina não dada: ", vacina)
                 return False
 
         return True
@@ -101,10 +104,12 @@ class ControladorAdocao:
             self.__adocoes_DAO.add(adocao)
 
             if adocao.termo_assinado == False:
-                assinar_termo = self.__tela_adocao.deseja_assinar_termo(adocao)
+                dados_adocao = {"nome_animal": adocao.animal.nome}
+                assinar_termo = self.__tela_adocao.deseja_assinar_termo(dados_adocao)
 
             if assinar_termo == "s" or adocao.termo_assinado:
-                self.assinar_termo_adocao(adocao)
+                dados_adocao = {"nome_animal": adocao.animal.nome}
+                self.assinar_termo_adocao(dados_adocao)
                 
             else:
                 self.__tela_adocao.mostrar_mensagem(
@@ -126,7 +131,13 @@ class ControladorAdocao:
                 self.__tela_adocao.mostrar_mensagem("Adoção não encontrada")
                 return
         
-        assinar = self.__tela_adocao.assinar_termo(adocao)
+        dados_adocao = {
+            "nome_animal": adocao.animal.nome,
+            "nome_adotante": adocao.adotante.nome,
+            "cpf_adotante": adocao.adotante.cpf,
+            "chip_animal": adocao.animal.chip,
+        }
+        assinar = self.__tela_adocao.assinar_termo(dados_adocao)
         
 
         if assinar == "s":
@@ -146,7 +157,7 @@ class ControladorAdocao:
         for adocao in self.__adocoes_DAO.get_all():
             if adocao.animal.chip == chip_animal:
                 
-                dados_adocao = {"nome_adotante": adocao.adotante.nome, "cpf_adotante": adocao.adotante.cpf, "nome_animal": adocao.animal.nome, "chip_animal": adocao.animal.chip, "data_adocao": adocao.data}
+                dados_adocao = {"nome_animal": adocao.animal.nome}
                 
                 confirma = self.__tela_adocao.confirmar_exclusão(dados_adocao)
 
@@ -170,14 +181,16 @@ class ControladorAdocao:
         return 
 
     def alterar_adocao(self):
+        chip_animal = self.__tela_adocao.seleciona_animal()
+
         dados = self.__tela_adocao.pega_dados_alteracao()
 
-        chip_animal = dados["chip_original"]
+        if dados["cpf"] is None and dados["animal"] is None:
+            return
 
         adocao = self.buscar_adocao(chip_animal)
 
         if adocao is None:
-            
             self.__tela_adocao.mostrar_mensagem("Adoção não encontrada.")
             return None
 
@@ -187,10 +200,10 @@ class ControladorAdocao:
             adotante = self.__controlador_sistema.controlador_pessoa.buscar_pessoa(cpf_adotante)
             if adotante is None:
                 
-                confirma = input("O novo adotante não existe, deseja cadastrar? (s/n) ")
+                confirma = self.__tela_adocao.deseja_cadastrar_adotante()
                 if confirma.lower() == "s":
-                    
                     adotante = self.__controlador_sistema.controlador_pessoa.incluir_adotante()
+
                 else:
                     self.__tela_adocao.mostrar_mensagem("Operação cancelada.")
                     return None
@@ -206,9 +219,8 @@ class ControladorAdocao:
             adocao.adotante = adotante
 
         
+        self.__adocoes_DAO.update(adocao)
         self.__tela_adocao.mostrar_mensagem("Adoção alterada com sucesso.")
-        
-        self.__tela_adocao.mostrar_adocao(adocao)
 
         return adocao
 

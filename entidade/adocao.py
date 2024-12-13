@@ -35,7 +35,6 @@ class Adocao:
     @termo_assinado.setter
     def termo_assinado(self, termo_assinado):
         if not isinstance(termo_assinado, bool):
-            print("termo_assinado deve ser um booleano")
             return
         
         self.__termo_assinado = termo_assinado

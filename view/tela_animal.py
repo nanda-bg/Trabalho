@@ -2,6 +2,9 @@ import tkinter as tk
 from tkinter import messagebox
 from tkinter import ttk
 
+from exception.camposVaziosException import CampoVaziosException
+from exception.chipInvalidoException import ChipInvalidoException
+
 class TelaAnimal:
     def __init__(self, root):
         self.root = root
@@ -56,12 +59,10 @@ class TelaAnimal:
     def mostrar_mensagem(self, mensagem):
         messagebox.showinfo("Informação", mensagem)
 
-    def pega_dados_animal(self, tipo=None):
+    def pega_dados_animal(self, tipo='gato'):
         self.limpar_tela()
         dados = {}
-        if tipo is None:
-            tipo = self.seleciona_tipo_animal()
-
+        
         tk.Label(self.root, text=f"Cadastro de {tipo.capitalize()}", font=("Times New Roman", 16), bg="#fdd9b9").pack(pady=10)
 
         labels = ["Chip:", "Nome:", "Raça:", "Vacinas"]
@@ -103,31 +104,34 @@ class TelaAnimal:
             else:
                 entrada = tk.Entry(self.root, font=("Times New Roman", 12))
                 entrada.pack(pady=5)
-            dados[campo] = entrada 
+                dados[campo] = entrada 
 
         def confirmar():
-            campos_vazios = []
+            try:
+                campos_vazios = []
 
-            for key, campo in dados.items():
-                valor = campo
-                if not valor:
-                    campos_vazios.append(key)
-                dados[key] = valor
+                for key, campo in dados.items():
+                    valor = campo
+                    if not valor:
+                        campos_vazios.append(key)
+                    dados[key] = valor
 
-            if campos_vazios:
-                messagebox.showerror("Erro", f"Os seguintes campos são obrigatórios: {', '.join(campos_vazios)}.")
-                return
+                if campos_vazios:
+                    raise CampoVaziosException(campos_vazios)
+                
+                vacinas_selecionadas_lista = [vacina for vacina, var in vacinas_selecionadas if var]
+                dados["vacinas"] = vacinas_selecionadas_lista
+        
+                for key, campo in dados.items():
+                    if key != "vacinas":
+                        dados[key] = campo.get()
+
+                dados["tipo_animal"] = tipo        
+                self.opcao_selecionada = dados
+                self.root.quit()
+            except Exception as e:
+                self.mostrar_mensagem(e)    
             
-            vacinas_selecionadas_lista = [vacina for vacina, var in vacinas_selecionadas if var]
-            dados["vacinas"] = vacinas_selecionadas_lista
-    
-            for key, campo in dados.items():
-                if key != "vacinas":
-                    dados[key] = campo.get()
-
-            dados["tipo_animal"]= tipo        
-            self.opcao_selecionada = dados
-            self.root.quit()
 
         def voltar():
             for key in dados:
@@ -166,8 +170,17 @@ class TelaAnimal:
         entrada_chip.pack(pady=10)
 
         def confirmar():
-            self.opcao_selecionada = entrada_chip.get()
-            self.root.quit()
+            try:
+                chip = entrada_chip.get()
+
+                if not chip.isdigit() or len(chip) != 7:
+                    raise ChipInvalidoException()
+                
+                self.opcao_selecionada = int(entrada_chip.get())
+                self.root.quit()
+                
+            except ChipInvalidoException as e:
+                self.mostrar_mensagem(e)
 
         def voltar():
             self.opcao_selecionada = None
@@ -236,142 +249,6 @@ class TelaAnimal:
             width=30
         ).pack(pady=20)
 
-    def pega_dados_alteracao(self, tipo="doador"):     
-        self.limpar_tela()
-        dados = {}
-
-        tk.Label(self.root, text=f"Alteração de {tipo.capitalize()}", font=("Times New Roman", 16), bg="#fdd9b9").pack(pady=10)
-
-        labels = ["CPF: ", "Nome:", "Endereço:"]
-        campos = ["cpf", "nome", "endereco"]
-
-        if tipo == "adotante":
-            labels += ["Tipo de Habitação:", "Tamanho da Habitação:", "Possui Animais?:"]
-            campos += ["tipo_habitacao", "tamanho_habitacao", "possui_animais"]
-
-        def configurar_opcao(opcao):
-            opcao.config(
-                font=("Times New Roman", 12),   
-                bg="white",                
-                fg="black",                  
-                relief="solid",                 
-                width=15                       
-            )   
-
-        for label, campo in zip(labels, campos):
-            tk.Label(self.root, text=label, font=("Times New Roman", 12), bg="#fdd9b9").pack(pady=5)
-            if campo == "tipo_habitacao":
-                opcao_habitacao = tk.StringVar(self.root)
-                opcao_habitacao.set("Escolha...") 
-                tipo_habitacao = tk.OptionMenu(self.root, opcao_habitacao, "Casa", "Apartamento")
-                configurar_opcao(tipo_habitacao)        
-                tipo_habitacao.pack(pady=5)
-                dados[campo] = opcao_habitacao
-                print("tipo_habitacao", opcao_habitacao)
-
-            elif campo == "tamanho_habitacao":
-                opcao_habitacao = tk.StringVar(self.root)
-                opcao_habitacao.set("Escolha...")
-                tamanho_habitacao = tk.OptionMenu(self.root, opcao_habitacao, "Grande", "Pequeno")
-                configurar_opcao(tamanho_habitacao)
-                tamanho_habitacao.pack(pady=5)
-                dados[campo] = opcao_habitacao.get()
-                print("tamanho_habitacao", opcao_habitacao)
-
-            elif campo == "possui_animais":
-                opcao_animal = tk.StringVar(self.root)
-                opcao_animal.set("Escolha...")
-                tem_animal = tk.OptionMenu(self.root, opcao_animal, "Sim", "Não")
-                configurar_opcao(tem_animal)
-                tem_animal.pack(pady=5)
-                dados[campo] = opcao_animal.get()
-                print("possui animais campo get:", opcao_animal.get())
-                  
-            else:
-                entrada = tk.Entry(self.root, font=("Times New Roman", 12))
-                entrada.pack(pady=5)
-            dados[campo] = entrada 
-
-        def confirmar():
-            for key, campo in dados.items():
-                valor = campo if campo else None
-                print("valor:", valor)
-                dados[key] = valor
-    
-            for key, campo in dados.items():
-                print("key:", key)
-                print("campo:", campo)
-                dados[key] = campo.get()
-            self.opcao_selecionada = dados
-            self.root.quit()
-
-        def voltar():
-            for key in dados:
-                dados[key] = None
-            self.opcao_selecionada = None
-            self.root.quit()
-
-        tk.Button(
-            self.root,
-            text="Confirmar",
-            command=confirmar,
-            font=("Times New Roman", 12),
-            bg="#ff7e0e",
-            fg="white"
-        ).pack(pady=20)
-
-        tk.Button(
-            self.root,
-            text="Voltar",
-            command=voltar,
-            font=("Times New Roman", 12),
-            bg="#ff7e0e",
-            fg="white",
-            width=30
-        ).pack(pady=20)
-
-
-        self.root.mainloop()
-        return dados
-    
-    def exibir_dados_cachorro(self, lista_cachorros):
-        self.limpar_tela()
-        titulo = "Lista de Cachorros"
-        tk.Label(self.root, text=titulo, font=("Times New Roman", 16), bg="#fdd9b9").pack(pady=10)
-
-        # Criação do Treeview
-        colunas = ("Chip", "Nome", "Raça", "Porte", "Vacinas")
-        tabela = ttk.Treeview(self.root, columns=colunas, show="headings", height=10)
-
-        # Configurar cabeçalhos
-        for coluna in colunas:
-            tabela.heading(coluna, text=coluna)
-            tabela.column(coluna, anchor="center", width=200)
-
-        # Adicionar os dados à tabela
-        for cachorro in lista_cachorros:
-            tabela.insert("", "end", values=(cachorro.chip, cachorro.nome, cachorro.raca, cachorro.porte, cachorro.vacinas))
-
-        tabela.pack(pady=10, padx=10)
-
-        def voltar():
-            self.root.quit()
-
-        # Botão voltar
-        tk.Button(
-            self.root,
-            text="Voltar",
-            command= voltar,
-            font=("Times New Roman", 12),
-            bg="#ff7e0e",
-            fg="white",
-            width=30
-        ).pack(pady=20)
-
-        
-
-        self.root.mainloop()
-
     def exibir_dados_animais(self, lista_animais):
             self.limpar_tela()
             titulo = "Lista de Animais"
@@ -389,8 +266,11 @@ class TelaAnimal:
             
             # Adicionar os dados à tabela
             for animal in lista_animais:
-                vacinas = ", ".join(vacina.nome for vacina in animal.vacinas) if animal.vacinas else "Nenhuma vacina registrada."
-                tabela.insert("", "end", values=(animal.chip, animal.nome, animal.raca, vacinas))
+                tabela.insert("", "end", values=(
+                    animal["Chip"], 
+                    animal["Nome"], 
+                    animal["Raça"], 
+                    animal["Vacinas"]))
 
             tabela.pack(pady=10, padx=10)
 
@@ -436,10 +316,8 @@ class TelaAnimal:
 
         def confirmar():            
             vacinas_selecionadas_lista = [vacina for vacina, var in vacinas_selecionadas if var.get()]
-            print("vacinas selecionadas lista:", vacinas_selecionadas_lista)
        
             self.opcao_selecionada = vacinas_selecionadas_lista
-            print("opcao selecionada:", self.opcao_selecionada)
             self.root.quit()
 
         def voltar():

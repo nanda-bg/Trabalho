@@ -2,8 +2,18 @@ import tkinter as tk
 from tkinter import messagebox
 from tkinter import ttk
 
-class TelaPessoa:
+from datetime import datetime
+
+from exception.camposVaziosException import CampoVaziosException
+from exception.cpfInvalidoException import CPFInvalidoException
+from exception.enderecoInvalidoException import EnderecoInvalidoException
+from exception.nascimentoAdotanteInvalido import NascimentoAdotanteInvalidoException
+from exception.nomeInvalidoException import NomeInvalidoException
+from view.abstract_tela import AbstractTela
+
+class TelaPessoa(AbstractTela):
     def __init__(self, root):
+        super().__init__()
         self.root = root
         self.opcao_selecionada = None
         self.root.title("Gerenciamento de Pessoas")
@@ -103,7 +113,7 @@ class TelaPessoa:
             tk.Label(central_frame, text=label, font=("Times New Roman", 12), bg="#fdd9b9").pack(pady=5)
             if campo == "tipo_habitacao":
                 opcao_habitacao = tk.StringVar(central_frame)
-                opcao_habitacao.set("Escolha...")  # Valor padrão
+                opcao_habitacao.set("Escolha...")
                 tipo_habitacao = tk.OptionMenu(central_frame, opcao_habitacao, "Casa", "Apartamento")
                 configurar_opcao(tipo_habitacao)        
                 tipo_habitacao.pack(pady=5)
@@ -128,25 +138,45 @@ class TelaPessoa:
             else:
                 entrada = tk.Entry(central_frame, font=("Times New Roman", 12))
                 entrada.pack(pady=5)
-            dados[campo] = entrada 
+                dados[campo] = entrada 
 
         def confirmar():
-            campos_vazios = []
+            try:    
+                campos_vazios = []
 
-            for key, campo in dados.items():
-                valor = campo
-                if not valor:
-                    campos_vazios.append(key)
-                dados[key] = valor
+                for key, campo in dados.items():
+                    valor = campo
+                    if not valor:
+                        campos_vazios.append(key)
+                    dados[key] = valor
 
-            if campos_vazios:
-                messagebox.showerror("Erro", f"Os seguintes campos são obrigatórios: {', '.join(campos_vazios)}.")
-                return
-    
-            for key, campo in dados.items():
-                dados[key] = campo.get()
-            self.opcao_selecionada = dados
-            self.root.quit()
+                if campos_vazios:
+                    raise CampoVaziosException(campos_vazios)
+                
+                for key, campo in dados.items():
+                    dados[key] = campo.get()
+
+                if not dados["cpf"].isdigit() or len(dados["cpf"]) != 11 or not self.validar_numeros_cpf(dados["cpf"].get()):
+                    raise CPFInvalidoException()
+
+                if not dados["nome"].length() > 3:
+                    raise NomeInvalidoException()
+
+                if not dados["endereco"].length() > 3:
+                    raise EnderecoInvalidoException()  
+                
+                
+                nascimento = datetime.strptime(dados["data_nascimento"], "%Y-%m-%d")
+                idade = (datetime.now() - nascimento).days // 365
+
+                if tipo == "adotante" and idade < 18:
+                    raise NascimentoAdotanteInvalidoException()
+
+                self.opcao_selecionada = dados
+                self.root.quit()
+
+            except Exception as e:
+                self.mostrar_mensagem(e)    
 
         def voltar():
             for key in dados:
@@ -185,6 +215,12 @@ class TelaPessoa:
         entrada_cpf.pack(pady=10)
 
         def confirmar():
+            if not entrada_cpf.get():
+                raise CampoVaziosException(["CPF"])
+            
+            if not entrada_cpf.get().isdigit() or len(entrada_cpf.get()) != 11 or not self.validar_numeros_cpf(entrada_cpf.get()):
+                raise CPFInvalidoException()
+            
             self.opcao_selecionada = entrada_cpf.get()
             self.root.quit()
 
@@ -288,16 +324,14 @@ class TelaPessoa:
                 configurar_opcao(tipo_habitacao)        
                 tipo_habitacao.pack(pady=5)
                 dados[campo] = opcao_habitacao
-                print("tipo_habitacao", opcao_habitacao)
 
             elif campo == "tamanho_habitacao":
-                opcao_habitacao = tk.StringVar(self.root)
-                opcao_habitacao.set("Escolha...")
-                tamanho_habitacao = tk.OptionMenu(self.root, opcao_habitacao, "Grande", "Pequeno")
+                opcao_tamanho = tk.StringVar(self.root)
+                opcao_tamanho.set("Escolha...")
+                tamanho_habitacao = tk.OptionMenu(self.root, opcao_tamanho, "Grande", "Pequeno")
                 configurar_opcao(tamanho_habitacao)
                 tamanho_habitacao.pack(pady=5)
-                dados[campo] = opcao_habitacao.get()
-                print("tamanho_habitacao", opcao_habitacao)
+                dados[campo] = opcao_tamanho
 
             elif campo == "possui_animais":
                 opcao_animal = tk.StringVar(self.root)
@@ -305,26 +339,18 @@ class TelaPessoa:
                 tem_animal = tk.OptionMenu(self.root, opcao_animal, "Sim", "Não")
                 configurar_opcao(tem_animal)
                 tem_animal.pack(pady=5)
-                dados[campo] = opcao_animal.get()
-                print("possui animais campo get:", opcao_animal.get())
+                dados[campo] = opcao_animal
                   
             else:
                 entrada = tk.Entry(self.root, font=("Times New Roman", 12))
                 entrada.pack(pady=5)
-            dados[campo] = entrada 
+                dados[campo] = entrada 
 
         def confirmar():
-            campos_vazios = []
-
             for key, campo in dados.items():
-                valor = campo if campo else None
-                print("valor:", valor)
+                valor = campo.get() if campo else None
                 dados[key] = valor
-    
-            for key, campo in dados.items():
-                print("key:", key)
-                print("campo:", campo)
-                dados[key] = campo.get()
+
             self.opcao_selecionada = dados
             self.root.quit()
 
@@ -341,7 +367,7 @@ class TelaPessoa:
             font=("Times New Roman", 12),
             bg="#ff7e0e",
             fg="white"
-        ).pack(pady=20)
+        ).pack()
 
         tk.Button(
             self.root,
@@ -373,7 +399,12 @@ class TelaPessoa:
 
         # Adicionar os dados à tabela
         for pessoa in lista_doadores:
-            tabela.insert("", "end", values=(pessoa.cpf, pessoa.nome, pessoa.data_nascimento, pessoa.endereco))
+            tabela.insert("", "end", values=(
+                pessoa["cpf"], 
+                pessoa["nome"], 
+                pessoa["data_nascimento"], 
+                pessoa["endereco"], 
+            ))
 
         tabela.pack(pady=10, padx=10)
 
@@ -412,7 +443,15 @@ class TelaPessoa:
 
             # Adicionar os dados à tabela
             for pessoa in lista_adotantes:
-                tabela.insert("", "end", values=(pessoa.cpf, pessoa.nome, pessoa.data_nascimento, pessoa.endereco, pessoa.tipo_habitacao, pessoa.tamanho_habitacao, pessoa.possui_animais))
+                tabela.insert("", "end", values=(
+                    pessoa["cpf"], 
+                    pessoa["nome"], 
+                    pessoa["data_nascimento"], 
+                    pessoa["endereco"], 
+                    pessoa["tipo_habitacao"], 
+                    pessoa["tamanho_habitacao"], 
+                    pessoa["possui_animais"]
+                    ))
 
             tabela.pack(pady=10, padx=10)
 
@@ -433,3 +472,4 @@ class TelaPessoa:
             
 
             self.root.mainloop()
+      

@@ -103,7 +103,17 @@ class ControladorPessoa():
             self.__tela_pessoa.mostrar_mensagem("Nenhum doador cadastrado")
             return
         
-        self.__tela_pessoa.exibir_dados_doadores(self.__doador_DAO.get_all())
+        doadores_dict = [
+            {
+                "cpf": doador.cpf,
+                "nome": doador.nome,
+                "data_nascimento": doador.data_nascimento,
+                "endereco": doador.endereco,
+            }
+            for doador in self.__doador_DAO.get_all()
+        ]
+            
+        self.__tela_pessoa.exibir_dados_doadores(doadores_dict)
 
 
         return self.__doador_DAO.get_all()
@@ -113,7 +123,20 @@ class ControladorPessoa():
             self.__tela_pessoa.mostrar_mensagem("Nenhum adotante cadastrado")
             return
         
-        self.__tela_pessoa.exibir_dados_adotantes(self.__adotante_DAO.get_all())
+        adotantes_dict = [
+            {
+                "cpf": adotante.cpf,
+                "nome": adotante.nome,
+                "data_nascimento": adotante.data_nascimento,
+                "endereco": adotante.endereco,
+                "tipo_habitacao": adotante.tipo_habitacao,
+                "tamanho_habitacao": adotante.tamanho_habitacao,
+                "possui_animais": adotante.possui_animais
+            }
+            for adotante in self.__adotante_DAO.get_all()
+        ]
+            
+        self.__tela_pessoa.exibir_dados_adotantes(adotantes_dict)
 
         return self.__adotante_DAO.get_all()
 

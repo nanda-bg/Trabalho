@@ -60,7 +60,17 @@ class ControladorDoacao:
             )
             return
 
-        self.__tela_doacao.exibir_dados_doacoes(doacoes)
+        doacoes_dict = [
+            {
+                "Data": doacao.data,
+                "Animal": doacao.animal.nome,
+                "Doador": doacao.doador.nome,
+                "Motivo": doacao.motivo_doacao,
+            }
+            for doacao in doacoes
+        ]
+
+        self.__tela_doacao.exibir_dados_doacoes(doacoes_dict)
 
         return doacoes
     
@@ -70,7 +80,8 @@ class ControladorDoacao:
         if chip_animal is not None:
             for doacao in self.__doacoes_DAO.get_all():
                 if doacao.animal.chip == chip_animal:
-                    confirma = self.__tela_doacao.confirmar_exclusão(doacao)
+                    dados_doacao = {"nome_animal": doacao.animal.nome}
+                    confirma = self.__tela_doacao.confirmar_exclusão(dados_doacao)
 
                     if confirma.lower() == "s":
                         self.__doacoes_DAO.remove(doacao.animal.chip)
