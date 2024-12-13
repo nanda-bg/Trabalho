@@ -210,7 +210,7 @@ class TelaAnimal:
         tk.Label(self.root, text=titulo, font=("Times New Roman", 16), bg="#fdd9b9").pack(pady=10)
 
         vacinas = "\n".join(f"Vacina: {vacina}" for vacina in dados_animal["vacinas"]) if dados_animal["vacinas"] else "Nenhuma vacina registrada."
-        # Exibe os dados básicos
+
         dados = [
             "Chip: " + dados_animal["chip"],
             "Nome: " + dados_animal["nome"],
@@ -218,7 +218,7 @@ class TelaAnimal:
             vacinas
         ]
 
-        # Se for um adotante, exibe os dados adicionais
+
         if tipo.lower() == "cachorro":
             dados += [
                 "Porte: " + dados_animal["porte"],
@@ -293,8 +293,6 @@ class TelaAnimal:
             dados[campo] = entrada 
 
         def confirmar():
-            campos_vazios = []
-
             for key, campo in dados.items():
                 valor = campo if campo else None
                 print("valor:", valor)
@@ -438,8 +436,10 @@ class TelaAnimal:
 
         def confirmar():            
             vacinas_selecionadas_lista = [vacina for vacina, var in vacinas_selecionadas if var.get()]
+            print("vacinas selecionadas lista:", vacinas_selecionadas_lista)
        
             self.opcao_selecionada = vacinas_selecionadas_lista
+            print("opcao selecionada:", self.opcao_selecionada)
             self.root.quit()
 
         def voltar():

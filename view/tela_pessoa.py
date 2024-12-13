@@ -64,7 +64,24 @@ class TelaPessoa:
         self.limpar_tela()
         dados = {}
 
-        tk.Label(self.root, text=f"Cadastro de {tipo.capitalize()}", font=("Times New Roman", 16), bg="#fdd9b9").pack(pady=10)
+        # Configurar canvas e scroll
+        canvas = tk.Canvas(self.root, bg="#fdd9b9")
+        scroll_y = tk.Scrollbar(self.root, orient="vertical", command=canvas.yview)
+        container = tk.Frame(canvas, bg="#fdd9b9")
+
+        # Configurar canvas e ligação com a rolagem
+        canvas.create_window((0, 0), window=container, anchor="nw")
+        canvas.configure(yscrollcommand=scroll_y.set)
+
+        canvas.pack(side="left", fill="both", expand=True)
+        scroll_y.pack(side="right", fill="y")
+
+        container.bind("<Configure>", lambda e: canvas.configure(scrollregion=canvas.bbox("all")))
+
+        central_frame = tk.Frame(container, bg="#fdd9b9")
+        central_frame.pack(expand=True)
+
+        tk.Label(central_frame, text=f"Cadastro de {tipo.capitalize()}", font=("Times New Roman", 16), bg="#fdd9b9").pack(pady=10)
 
         labels = ["CPF:", "Nome:", "Data de Nascimento (AAAA-MM-DD):", "Endereço:"]
         campos = ["cpf", "nome", "data_nascimento", "endereco"]
@@ -83,33 +100,33 @@ class TelaPessoa:
             )   
 
         for label, campo in zip(labels, campos):
-            tk.Label(self.root, text=label, font=("Times New Roman", 12), bg="#fdd9b9").pack(pady=5)
+            tk.Label(central_frame, text=label, font=("Times New Roman", 12), bg="#fdd9b9").pack(pady=5)
             if campo == "tipo_habitacao":
-                opcao_habitacao = tk.StringVar(self.root)
+                opcao_habitacao = tk.StringVar(central_frame)
                 opcao_habitacao.set("Escolha...")  # Valor padrão
-                tipo_habitacao = tk.OptionMenu(self.root, opcao_habitacao, "Casa", "Apartamento")
+                tipo_habitacao = tk.OptionMenu(central_frame, opcao_habitacao, "Casa", "Apartamento")
                 configurar_opcao(tipo_habitacao)        
                 tipo_habitacao.pack(pady=5)
                 dados[campo] = opcao_habitacao
 
             elif campo == "tamanho_habitacao":
-                opcao_habitacao = tk.StringVar(self.root)
+                opcao_habitacao = tk.StringVar(central_frame)
                 opcao_habitacao.set("Escolha...")
-                tamanho_habitacao = tk.OptionMenu(self.root, opcao_habitacao, "Grande", "Pequeno")
+                tamanho_habitacao = tk.OptionMenu(central_frame, opcao_habitacao, "Grande", "Pequeno")
                 configurar_opcao(tamanho_habitacao)
                 tamanho_habitacao.pack(pady=5)
                 dados[campo] = opcao_habitacao
 
             elif campo == "possui_animais":
-                opcao_animal = tk.StringVar(self.root)
+                opcao_animal = tk.StringVar(central_frame)
                 opcao_animal.set("Escolha...")
-                tem_animal = tk.OptionMenu(self.root, opcao_animal, "Sim", "Não")
+                tem_animal = tk.OptionMenu(central_frame, opcao_animal, "Sim", "Não")
                 configurar_opcao(tem_animal)
                 tem_animal.pack(pady=5)
                 dados[campo] = opcao_animal
                   
             else:
-                entrada = tk.Entry(self.root, font=("Times New Roman", 12))
+                entrada = tk.Entry(central_frame, font=("Times New Roman", 12))
                 entrada.pack(pady=5)
             dados[campo] = entrada 
 
@@ -138,7 +155,7 @@ class TelaPessoa:
             self.root.quit()
 
         tk.Button(
-            self.root,
+            central_frame,
             text="Confirmar",
             command=confirmar,
             font=("Times New Roman", 12),
@@ -147,7 +164,7 @@ class TelaPessoa:
         ).pack(pady=20)
 
         tk.Button(
-            self.root,
+            central_frame,
             text="Voltar",
             command=voltar,
             font=("Times New Roman", 12),

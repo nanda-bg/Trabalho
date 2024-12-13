@@ -79,7 +79,6 @@ class ControladorPessoa():
 
         if not self.validar_cpf(cpf):
             self.__tela_pessoa.mostrar_mensagem("CPF inválido")
-            return
         
         if self.buscar_pessoa(cpf) != None:
             if isinstance(self.buscar_pessoa(cpf), Doador):
@@ -91,7 +90,6 @@ class ControladorPessoa():
             
         if not self.validar_idade(data_nascimento):
             self.__tela_pessoa.mostrar_mensagem("O adotante precisa ser maior de 18 anos")
-            return
 
         adotante = Adotante(cpf, nome, data_nascimento, endereco, tipo_habitacao, tamanho_habitacao, possui_animais)
         self.__adotante_DAO.add(adotante)

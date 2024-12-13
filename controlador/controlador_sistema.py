@@ -2,17 +2,15 @@ from controlador.controlador_adocao import ControladorAdocao
 from controlador.controlador_animal import ControladorAnimal
 from controlador.controlador_doacao import ControladorDoacao
 from controlador.controlador_pessoa import ControladorPessoa
-from controlador.controlador_vacina import ControladorVacina
 from view.tela_sistema import TelaSistema
 
 
 class SistemaPessoas:
     def __init__(self, root):
         self.__controlador_pessoa = ControladorPessoa(self, root)
-        self.__controlador_adocao = ControladorAdocao(self)
+        self.__controlador_adocao = ControladorAdocao(self, root)
         self.__controlador_animal = ControladorAnimal(self, root)
         self.__controlador_doacao = ControladorDoacao(self, root)
-        self.__controlador_vacina = ControladorVacina(self)
         self.__tela_sistema = TelaSistema(root)
 
     @property
@@ -26,10 +24,6 @@ class SistemaPessoas:
     @property
     def controlador_adocao(self):
         return self.__controlador_adocao
-
-    @property
-    def controlador_vacina(self):
-        return self.__controlador_vacina
 
     @property
     def controlador_doacao(self):
@@ -50,9 +44,6 @@ class SistemaPessoas:
     def ir_para_doacao(self):
         self.__controlador_doacao.abrir_tela()
 
-    def ir_para_vacinas(self):
-        self.__controlador_vacina.abrir_tela()
-
     def encerra_sistema(self):
         exit(0)
 
@@ -62,7 +53,6 @@ class SistemaPessoas:
             2: self.ir_para_animais,
             3: self.ir_para_adocao,
             4: self.ir_para_doacao,
-            5: self.ir_para_vacinas,
             0: self.encerra_sistema,
         }
 

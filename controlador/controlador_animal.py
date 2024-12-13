@@ -4,14 +4,11 @@ from entidade.cachorro import Cachorro
 from entidade.gato import Gato
 from entidade.vacina import Vacina
 from view.tela_animal import TelaAnimal
-from limite.tela_vacina import TelaVacina
-
 
 class ControladorAnimal:
     def __init__(self, controlador_sistema, root=None):
         self.__cachorro_DAO = CachorroDAO()
         self.__gato_DAO = GatoDAO()
-        self.__tela_vacina = TelaVacina()
         self.__controlador_sistema = controlador_sistema
         self.__root = root
         self.__tela_animal = TelaAnimal(self.__root)
@@ -46,6 +43,10 @@ class ControladorAnimal:
         return animal
     
     def remover_animal(self, animal = None):
+        if animal == None:
+            chip = self.__tela_animal.seleciona_animal()
+            animal = self.buscar_animal(chip)
+
         if animal in self.__cachorro_DAO.get_all():
             self.__cachorro_DAO.remove(animal.chip)
             
@@ -62,12 +63,21 @@ class ControladorAnimal:
             animal = self.buscar_animal(chip)
 
         if vacinas == None:
-            vacinas = self.__tela_animal.pega_dados_vacina()    
+            vacinas = self.__tela_animal.pega_dados_vacina()  
             print("vacinas: ", vacinas)
-        for vacina in vacinas["vacinas"]: 
+
+        vacinas_selecionadas = [vacina for vacina, var in vacinas["vacinas"] if var.get()]    
+
+        for vacina in vacinas_selecionadas: 
             print("vacina: ", vacina)
             if vacina not in animal.vacinas:
                 animal.vacinas.append(Vacina(vacina))
+
+        if animal in self.__cachorro_DAO.get_all():
+            self.__cachorro_DAO.update(animal)
+
+        else:
+            self.__gato_DAO.update(animal)            
         
     def tem_vacinas_basicas(self, animal):
         vacinas_basicas = ['raiva', 'leptospirose', 'hepatite infecciosa']
@@ -84,6 +94,8 @@ class ControladorAnimal:
         if len(todos_animais) < 1:
             self.__tela_animal.mostrar_mensagem("Nenhum animal cadastrado")
             return
+        
+        print("todos animais: ", todos_animais[0].vacinas)
         
         self.__tela_animal.exibir_dados_animais(todos_animais)
 
@@ -102,7 +114,20 @@ class ControladorAnimal:
 
     def filtrar_animais_com_vacinas_basicas(self):
         todos_animais = list(self.__cachorro_DAO.get_all()) + list(self.__gato_DAO.get_all())
-        return [animal for animal in todos_animais if animal.tem_vacinas_basicas]
+
+        animais_com_vacinas = []
+
+        vacinas_basicas = ['raiva', 'leptospirose', 'hepatite infecciosa']
+
+        for animal in todos_animais:
+            vacinas_dadas = [vacina.nome.lower() for vacina in animal.vacinas]
+
+            for vacina in vacinas_basicas:
+                if vacina not in vacinas_dadas:
+                    break
+            animais_com_vacinas.append(animal)
+
+        return animais_com_vacinas
         
         
     def seleciona_animal(self):
@@ -160,29 +185,8 @@ class ControladorAnimal:
 
         while True:
             opcao_escolhida = self.__tela_animal.mostrar_tela()
-
-            if opcao_escolhida == 5:
-                chip = self.__tela_animal.valida_chip()
-                
-                animal = self.buscar_animal(chip)
-                
-
-                if animal == None:
-                    self.__tela_animal.mostrar_mensagem("Animal não encontrado.")
-
-                else:
-                    confirmar = input("Tem certeza que deseja remover esse animal? (s/n)")
-
-                    if confirmar == "s":
-                        self.remover_animal(animal)
-                        self.__tela_animal.mostrar_mensagem("Animal removido com sucesso.")
-
-                    else:
-                        self.__tela_animal.mostrar_mensagem("Operação cancelada.")
-
-            else:
-                funcao_escolhida = lista_opcoes[opcao_escolhida]
-                funcao_escolhida()
+            funcao_escolhida = lista_opcoes[opcao_escolhida]
+            funcao_escolhida()
 
     def retornar(self):
         self.__controlador_sistema.abrir_tela_inicial()

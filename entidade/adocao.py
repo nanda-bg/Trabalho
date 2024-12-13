@@ -7,10 +7,6 @@ class Adocao:
         self.__data = data
         self.__adotante = adotante
         self.__termo_assinado = termo_assinado
-
-    @property
-    def ong(self):
-        return self.__ong
     
     @property
     def data(self):

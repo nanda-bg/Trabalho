@@ -19,7 +19,6 @@ class TelaSistema:
             ("Ir para tela de Animais", 2),
             ("Ir para tela de Adoção", 3),
             ("Ir para tela de Doação", 4),
-            ("Ir para tela de Vacinas", 5),
             ("Finalizar sistema", 0)
         ]
 

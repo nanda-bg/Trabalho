@@ -1,40 +1,44 @@
 import datetime
+from DAO.adocao_dao import AdocaoDAO
 from entidade.adotante import Adotante
 from entidade.adocao import Adocao
 from entidade.cachorro import Cachorro
-from limite.tela_adocao import TelaAdocao
+from view.tela_adocao import TelaAdocao
 
 
 class ControladorAdocao:
-    def __init__(self, controlador_sistema):
-        self.__adocoes = []
-        self.__tela_adocao = TelaAdocao()
+    def __init__(self, controlador_sistema, root):
+        self.__adocoes_DAO = AdocaoDAO()
+        self.__root = root
+        self.__tela_adocao = TelaAdocao(self.__root)
         self.__controlador_sistema = controlador_sistema
 
     def emitir_relatorio_adocoes(self):
-        
         datas = self.__tela_adocao.pega_datas_relatorio()
+
         formato_data = "%Y-%m-%d"
 
         # Converter as datas de string para datetime
         inicio = datetime.datetime.strptime(datas["inicio"], formato_data)
         fim = datetime.datetime.strptime(datas["fim"], formato_data)
 
-        adocoes = [adocao for adocao in self.__adocoes if inicio <= datetime.datetime.strptime(adocao.data, formato_data) <= fim]
+        adocoes = [adocao for adocao in self.__adocoes_DAO.get_all() if inicio <= datetime.datetime.strptime(adocao.data, formato_data) <= fim]
         if len(adocoes) == 0:
             self.__tela_adocao.mostrar_mensagem(
                 "Nenhuma adoção realizada nesse período"
             )
             return
 
-        
-        self.__tela_adocao.mostrar_mensagem("-------- Relátorio ---------")
-        for adocao in adocoes:
-            self.__tela_adocao.mostrar_adocao(adocao)
+        self.__tela_adocao.exibir_dados_adocoes(adocoes)
 
         return adocoes
 
     def avaliar_adocao(self, animal, adotante):
+        print("animal adocao", animal)
+        print("adotante adocao", adotante)
+        print("isinstance", isinstance(animal, Cachorro))
+
+
         if isinstance(animal, Cachorro):
             if animal.porte == "grande" and (
                 adotante.tipo_habitacao == "apartamento"
@@ -42,8 +46,15 @@ class ControladorAdocao:
             ):
                 return False
 
-        if not animal.tem_vacinas_basicas():
-            return False
+        vacinas_basicas = ['raiva', 'leptospirose', 'hepatite infecciosa']
+        vacinas_dadas = [vacina.nome.lower() for vacina in animal.vacinas]
+
+        print("vacinas_dadas", vacinas_dadas)
+
+        for vacina in vacinas_basicas:
+            if vacina not in vacinas_dadas:
+                print("vacina não dada: ", vacina)
+                return False
 
         return True
 
@@ -57,13 +68,11 @@ class ControladorAdocao:
         adotante = self.__controlador_sistema.controlador_pessoa.buscar_pessoa(cpf)
 
         if adotante != None and not isinstance(adotante, Adotante):
-            self.__tela_adocao.mostrar_mensagem("CPF já cadastrado para um doador")
-            self.__tela_adocao.mostrar_mensagem("Doadores não podem adotar animais")
+            self.__tela_adocao.mostrar_mensagem("CPF já cadastrado para um doador e não pode ser utilizado para adoção")
             return
 
         elif adotante == None:
-            self.__tela_adocao.mostrar_mensagem("Adotante não encontrado")
-            cadastrar = input("Deseja cadastrar um novo adotante? (s/n) ")
+            cadastrar = self.__tela_adocao.deseja_cadastrar_adotante()
 
             if cadastrar == "s":
                 adotante = (
@@ -89,18 +98,14 @@ class ControladorAdocao:
             )
 
             adocao = Adocao(animal, adotante)
+            self.__adocoes_DAO.add(adocao)
 
             if adocao.termo_assinado == False:
-                assinar_termo = input("Deseja assinar o termo de adoção? (s/n)")
+                assinar_termo = self.__tela_adocao.deseja_assinar_termo(adocao)
 
             if assinar_termo == "s" or adocao.termo_assinado:
                 self.assinar_termo_adocao(adocao)
-                adocao.termo_assinado = True
-
-                self.__adocoes.append(adocao)
-
-                self.__controlador_sistema.controlador_animal.remover_animal(animal)
-
+                
             else:
                 self.__tela_adocao.mostrar_mensagem(
                     f"Processo de adoção não foi concluído."
@@ -112,14 +117,6 @@ class ControladorAdocao:
         else:
             self.__tela_adocao.mostrar_mensagem(f"Adoção não aprovada.")
 
-    def buscar_adocao(self):
-        chip = self.__tela_adocao.pega_chip()
-
-        for adocao in self.__adocoes:
-            if adocao.animal.chip == chip:
-                return adocao
-
-        return None
 
     def assinar_termo_adocao(self, adocao=None):
         if adocao == None:
@@ -128,24 +125,14 @@ class ControladorAdocao:
             if adocao == None:
                 self.__tela_adocao.mostrar_mensagem("Adoção não encontrada")
                 return
-
         
-        self.__tela_adocao.mostrar_mensagem(
-            f"Eu, {adocao.adotante.nome}, portador do CPF {adocao.adotante.cpf},"
-        )
-        self.__tela_adocao.mostrar_mensagem(
-            f"declaro que irei adotar o animal {adocao.animal.nome},"
-        )
-        self.__tela_adocao.mostrar_mensagem(f"portador do chip {adocao.animal.chip},")
-        self.__tela_adocao.mostrar_mensagem(
-            f"e me comprometo a cuidar dele com responsabilidade, amor e carinho."
-        )
-        
-        assinar = input("Você concorda com o termo acima? (s/n) ")
+        assinar = self.__tela_adocao.assinar_termo(adocao)
         
 
         if assinar == "s":
             adocao.termo_assinado = True
+            self.__adocoes_DAO.update(adocao)
+            self.__controlador_sistema.controlador_animal.remover_animal(adocao.animal)
             self.__tela_adocao.mostrar_mensagem("Termo de adoção assinado com sucesso")
             return
 
@@ -154,15 +141,14 @@ class ControladorAdocao:
 
 
     def excluir_adocao(self):
-        chip_animal = self.__tela_adocao.pega_chip()
+        chip_animal = self.__tela_adocao.seleciona_animal()
 
-        for adocao in self.__adocoes:
+        for adocao in self.__adocoes_DAO.get_all():
             if adocao.animal.chip == chip_animal:
                 
                 dados_adocao = {"nome_adotante": adocao.adotante.nome, "cpf_adotante": adocao.adotante.cpf, "nome_animal": adocao.animal.nome, "chip_animal": adocao.animal.chip, "data_adocao": adocao.data}
-                self.__tela_adocao.mostrar_adocao(dados_adocao)
                 
-                confirma = input("Tem certeza que deseja excluir a adoção? (s/n) ")
+                confirma = self.__tela_adocao.confirmar_exclusão(dados_adocao)
 
                 if confirma.lower() == "s":
                     if hasattr(adocao.animal, "porte"):
@@ -170,7 +156,7 @@ class ControladorAdocao:
                     else:
                         self.__controlador_sistema.controlador_animal.adicionar_animal(adocao.animal.chip, adocao.animal.nome, adocao.animal.raca, adocao.animal.vacinas, "gato")
                     
-                    self.__adocoes.remove(adocao)
+                    self.__adocoes_DAO.remove(adocao.animal.chip)
                     
                     self.__tela_adocao.mostrar_mensagem(f"Adoção do animal com o chip {chip_animal} foi excluída.")
                 
@@ -226,8 +212,11 @@ class ControladorAdocao:
 
         return adocao
 
-    def buscar_adocao(self, chip_animal):
-        for adocao in self.__adocoes:
+    def buscar_adocao(self, chip_animal = None):
+        if chip_animal == None:
+            chip_animal = self.__tela_adocao.seleciona_animal()
+
+        for adocao in self.__adocoes_DAO.get_all():
             if adocao.animal.chip == chip_animal:
                 return adocao
 
@@ -241,11 +230,11 @@ class ControladorAdocao:
             3: self.assinar_termo_adocao,
             4: self.alterar_adocao,
             5: self.excluir_adocao,
-            0: self.retornar,
+            6: self.retornar,
         }
 
         while True:
-            opcao_escolhida = self.__tela_adocao.tela_opcoes()
+            opcao_escolhida = self.__tela_adocao.mostrar_tela()
             funcao_escolhida = lista_opcoes[opcao_escolhida]
             funcao_escolhida()
 
