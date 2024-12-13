@@ -33,7 +33,6 @@ class ControladorPessoa():
         endereco = dados_doador["endereco"]
 
         if not self.validar_cpf(cpf):
-            print("cpf invalido")
             self.__tela_pessoa.mostrar_mensagem("CPF inválido")
             return
         
@@ -60,7 +59,7 @@ class ControladorPessoa():
 
         self.__doador_DAO.add(doador)
 
-        print()
+        
         self.__tela_pessoa.mostrar_mensagem("Doador cadastrado com sucesso.")
 
         return doador
@@ -107,8 +106,7 @@ class ControladorPessoa():
             return
         
         self.__tela_pessoa.exibir_dados_doadores(self.__doador_DAO.get_all())
-        
-        print("acabou")
+
 
         return self.__doador_DAO.get_all()
     
@@ -216,14 +214,6 @@ class ControladorPessoa():
 
     def alterar_adotante(self):
         dados = self.__tela_pessoa.pega_dados_alteracao("adotante")
-        print("cpf", dados["cpf"])
-        print("nome", dados["nome"])
-        print("endereco", dados["endereco"])
-        print("tipo_habitacao", dados["tipo_habitacao"])
-        print("tamanho_habitacao", dados["tamanho_habitacao"])
-        print("possui_animais", dados["possui_animais"])
-
-
 
         cpf = dados["cpf"]
         pessoa = self.buscar_pessoa(cpf)
@@ -257,7 +247,7 @@ class ControladorPessoa():
         if possui_animais is not None:
             pessoa.possui_animais = True if possui_animais == "Sim" else False
 
-        print()
+        
         self.__tela_pessoa.mostrar_mensagem("Dados do adotante alterados com sucesso.")
         self.__adotante_DAO.update(pessoa)
         return pessoa
@@ -267,17 +257,17 @@ class ControladorPessoa():
         pessoa = self.buscar_pessoa(cpf)
 
         if pessoa is None:
-            print()
+            
             self.__tela_pessoa.mostrar_mensagem("Pessoa não encontrada.")
             return None
 
         if not isinstance(pessoa, Doador):
-            print()
+            
             self.__tela_pessoa.mostrar_mensagem("Essa pessoa não é um doador.")
             return None
 
         self.__doador_DAO.remove(pessoa.cpf)
-        print()
+        
         self.__tela_pessoa.mostrar_mensagem("Doador removido com sucesso.")
         return pessoa
     
@@ -286,17 +276,17 @@ class ControladorPessoa():
         pessoa = self.buscar_pessoa(cpf)
 
         if pessoa is None:
-            print()
+            
             self.__tela_pessoa.mostrar_mensagem("Pessoa não encontrada.")
             return None
 
         if not isinstance(pessoa, Adotante):
-            print()
+            
             self.__tela_pessoa.mostrar_mensagem("Essa pessoa não é um adotante.")
             return None
 
         self.__adotante_DAO.remove(pessoa.cpf)
-        print()
+        
         self.__tela_pessoa.mostrar_mensagem("Adotante removido com sucesso.")
         return pessoa
 

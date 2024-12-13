@@ -15,7 +15,6 @@ class ControladorDoacao:
 
     def doar(self):
         dados_doacao = self.__tela_doacao.pega_dados_doacao()
-        print("cpf do doador", dados_doacao["cpf_doador"])
         if dados_doacao["cpf_doador"] is None:
             return
         
@@ -41,16 +40,12 @@ class ControladorDoacao:
         motivo_doacao = dados_doacao["motivo_doacao"]
 
         doacao = Doacao(animal, doador, motivo_doacao)
-        print("adicionei doacao: ", doacao.animal, doacao.doador, doacao.motivo_doacao, doacao.data)
         self.__doacoes_DAO.add(doacao)
-        print("doaçoes:", self.__doacoes_DAO.get_all())
         self.__tela_doacao.mostrar_mensagem("Doação realizada com sucesso.")
         return doacao
 
     def emitir_relatorio_doacoes(self):
-        print("doaçoes:", self.__doacoes_DAO.get_all())
         datas = self.__tela_doacao.pega_datas_relatorio()
-        print("datas", datas)
 
         formato_data = "%Y-%m-%d"
 
@@ -79,6 +74,7 @@ class ControladorDoacao:
 
                     if confirma.lower() == "s":
                         self.__doacoes_DAO.remove(doacao.animal.chip)
+                        self.__controlador_animal.remover_animal(doacao.animal)
                         self.__tela_doacao.mostrar_mensagem(f"Doação do animal com o chip {chip_animal} foi excluída.")
 
                     else:
@@ -103,7 +99,7 @@ class ControladorDoacao:
                 self.__tela_doacao.mostrar_mensagem("Doação não encontrada.")
                 return
 
-            cpf_novo_doador = dados["cpf"]
+            cpf_novo_doador = dados["cpf"] if dados["cpf"] != "" else None
 
             if cpf_novo_doador is not None:
                 doador = self.__controlador_sistema.controlador_pessoa.buscar_pessoa(cpf_novo_doador)
@@ -119,7 +115,7 @@ class ControladorDoacao:
                         self.__tela_doacao.mostrar_mensagem("Operação cancelada.")
                         return None
 
-            novo_animal = dados["animal"]    
+            novo_animal = dados["animal"]  if dados["animal"] != "" else None  
 
             if novo_animal is not None:
                 novo_animal = self.__controlador_sistema.controlador_animal.buscar_animal(novo_animal)
@@ -137,7 +133,7 @@ class ControladorDoacao:
                 
                 doacao.animal = novo_animal
 
-            novo_motivo = dados["motivo_doacao"]
+            novo_motivo = dados["motivo_doacao"] if dados["motivo_doacao"] != "" else None
             if novo_motivo is not None:
                 doacao.motivo_doacao = novo_motivo
             

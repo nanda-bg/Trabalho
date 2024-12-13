@@ -296,42 +296,6 @@ class TelaDoacao:
         else:
             return "n"
 
-    
-    def exibir_dados_pessoa(self, dados_pessoa, tipo):
-        self.limpar_tela()
-
-        titulo = f"Dados do {tipo.capitalize()}"
-        tk.Label(self.root, text=titulo, font=("Times New Roman", 16), bg="#fdd9b9").pack(pady=10)
-
-        # Exibe os dados básicos
-        dados = [
-            "CPF: " + dados_pessoa["cpf"],
-            "Nome: " + dados_pessoa["nome"],
-            "Data de Nascimento: " + dados_pessoa["data_nascimento"],
-            "Endereço:  " + dados_pessoa["endereco"]
-        ]
-
-        # Se for um adotante, exibe os dados adicionais
-        if tipo.lower() == "adotante":
-            possui_animais = "Sim" if dados_pessoa["possui_animais"] == True else "Não"
-            dados += [
-                "Tipo de Habitação: " + dados_pessoa["tipo_habitacao"],
-                "Tamanho da Habitação:  " + dados_pessoa["tamanho_habitacao"],
-                "Possui Animais:  " + possui_animais
-            ]
-
-        self.mostrar_mensagem("\n".join(dados))
-
-        tk.Button(
-            self.root,
-            text="Voltar",
-            command=None,
-            font=("Times New Roman", 12),
-            bg="#ff7e0e",
-            fg="white",
-            width=30
-        ).pack(pady=20)
-
     def pega_dados_alteracao(self):     
         self.limpar_tela()
         dados = {}
@@ -349,8 +313,7 @@ class TelaDoacao:
 
         def confirmar():
             for key, campo in dados.items():
-                valor = campo if campo else None
-                print("valor:", valor)
+                valor = campo.get() if campo else None
                 dados[key] = valor
 
             self.opcao_selecionada = dados
@@ -420,42 +383,3 @@ class TelaDoacao:
         
 
         self.root.mainloop()
-
-    def exibir_dados_adotantes(self, lista_adotantes):
-            self.limpar_tela()
-            titulo = "Lista de Pessoas"
-            tk.Label(self.root, text=titulo, font=("Times New Roman", 16), bg="#fdd9b9").pack(pady=10)
-
-            # Criação do Treeview
-            colunas = ("CPF", "Nome", "Data de Nascimento", "Endereço", "Tipo de Habitação", "Tamanho da Habitação", "Possui Animais?")
-            tabela = ttk.Treeview(self.root, columns=colunas, show="headings", height=10)
-
-            # Configurar cabeçalhos
-            for coluna in colunas:
-                tabela.heading(coluna, text=coluna)
-
-                tabela.column(coluna, anchor="center", width=200)
-
-            # Adicionar os dados à tabela
-            for pessoa in lista_adotantes:
-                tabela.insert("", "end", values=(pessoa.cpf, pessoa.nome, pessoa.data_nascimento, pessoa.endereco, pessoa.tipo_habitacao, pessoa.tamanho_habitacao, pessoa.possui_animais))
-
-            tabela.pack(pady=10, padx=10)
-
-            def voltar():
-                self.root.quit()
-
-            # Botão voltar
-            tk.Button(
-                self.root,
-                text="Voltar",
-                command= voltar,
-                font=("Times New Roman", 12),
-                bg="#ff7e0e",
-                fg="white",
-                width=30
-            ).pack(pady=20)
-
-            
-
-            self.root.mainloop()

@@ -11,7 +11,6 @@ class ControladorAnimal:
     def __init__(self, controlador_sistema, root=None):
         self.__cachorro_DAO = CachorroDAO()
         self.__gato_DAO = GatoDAO()
-        self.animais_disponiveis = []
         self.__tela_vacina = TelaVacina()
         self.__controlador_sistema = controlador_sistema
         self.__root = root
@@ -32,7 +31,7 @@ class ControladorAnimal:
         existe = self.buscar_animal(chip)
 
         if existe != None:
-            print()
+            
             self.__tela_animal.mostrar_mensagem("Chip já cadastrado.")
             return
             
@@ -41,42 +40,34 @@ class ControladorAnimal:
             self.__cachorro_DAO.add(animal)
 
         else:    
-            print("Vacinas", vacinas)
-            print("Vacinas são do tipo: ", type(vacinas[0]))
             animal = Gato(chip, nome, raca, vacinas)
             self.__gato_DAO.add(animal)
-
-        if animal.tem_vacinas_basicas():
-            self.animais_disponiveis.append(animal)
 
         return animal
     
     def remover_animal(self, animal = None):
-        if animal not in self.todos_animais:
-            raise ValueError("animal não pertence a ONG")
-
-        self.todos_animais.remove(animal)
-
-        if animal in self.animais_disponiveis:
-            self.animais_disponiveis.remove(animal)
-
-    def adicionar_vacina(self, animal = None, vacina = None):
-        if animal == None:
-            opcoes = {1: "raiva", 2: "leptospirose", 3: "hepatite infecciosa", 
-                        4: "cinomose", 5: "parvovirose", 6: "coronavirose"}
+        if animal in self.__cachorro_DAO.get_all():
+            self.__cachorro_DAO.remove(animal.chip)
             
-            self.__controlador_sistema.controlador_vacina.abrir_tela()
+        elif animal in self.__gato_DAO.get_all():
+            self.__gato_DAO.remove(animal.chip)
 
-        if vacina in animal.vacinas:
-            print("O animal já possui a vacina selecionada.")
         else:
-            print()
-            self.__tela_vacina.mostrar_mensagem(f"{vacina} adicionada.")
+            self.__tela_animal.mostrar_mensagem("Animal não encontrado.")
         
-            animal.vacinas.append(vacina)
 
-        if animal.tem_vacinas_basicas() and animal not in self.animais_disponiveis:
-                self.animais_disponiveis.append(animal)
+    def adicionar_vacina(self, animal = None, vacinas = None):
+        if animal == None:
+            chip = self.__tela_animal.seleciona_animal()
+            animal = self.buscar_animal(chip)
+
+        if vacinas == None:
+            vacinas = self.__tela_animal.pega_dados_vacina()    
+            print("vacinas: ", vacinas)
+        for vacina in vacinas["vacinas"]: 
+            print("vacina: ", vacina)
+            if vacina not in animal.vacinas:
+                animal.vacinas.append(Vacina(vacina))
         
     def tem_vacinas_basicas(self, animal):
         vacinas_basicas = ['raiva', 'leptospirose', 'hepatite infecciosa']
@@ -89,21 +80,30 @@ class ControladorAnimal:
         return True
 
     def listar_animais(self):
-        if len(self.todos_animais) < 1:
+        todos_animais = list(self.__cachorro_DAO.get_all()) + list(self.__gato_DAO.get_all())
+        if len(todos_animais) < 1:
             self.__tela_animal.mostrar_mensagem("Nenhum animal cadastrado")
             return
         
-        self.__tela_animal.exibir_dados_cachorro(self.__cachorro_DAO.get_all())
+        self.__tela_animal.exibir_dados_animais(todos_animais)
 
-        return self.__doador_DAO.get_all()
+        return todos_animais
     
     def listar_animais_disponiveis(self):
-        if len(self.animais_disponiveis) < 1:
+        animais_disponiveis = self.filtrar_animais_com_vacinas_basicas()
+
+        if len(animais_disponiveis) < 1:
             self.__tela_animal.mostrar_mensagem("Nenhum animal disponível")
             return
         
-        for animal in self.animais_disponiveis:
-            self.__tela_animal.mostrar_mensagem(animal)
+        self.__tela_animal.exibir_dados_animais(animais_disponiveis)
+
+        return animais_disponiveis
+
+    def filtrar_animais_com_vacinas_basicas(self):
+        todos_animais = list(self.__cachorro_DAO.get_all()) + list(self.__gato_DAO.get_all())
+        return [animal for animal in todos_animais if animal.tem_vacinas_basicas]
+        
         
     def seleciona_animal(self):
         chip = self.__tela_animal.valida_chip()
@@ -111,26 +111,30 @@ class ControladorAnimal:
 
     def buscar_animal(self, chip = None):
         valor_inicial = chip
+        print("valor inicial", valor_inicial)
 
         if chip == None:
             chip = self.__tela_animal.seleciona_animal() 
 
-        for cachorro in self.__cachorro_DAO.get_all():
-            if cachorro.chip == chip:
-                if valor_inicial == None:
-                    dados_cachorro = {"porte": cachorro.porte, "nome":cachorro.nome, "chip": cachorro.chip, "raca": cachorro.raca, "vacinas": cachorro.vacinas} 
-                    self.__tela_animal.mostrar_animal(dados_cachorro)
-                return cachorro
-            
-        for gato in self.__gato_DAO.get_all():
-            if gato.chip == chip:
-                if valor_inicial == None:    
-                    dados_gato = {"nome":gato.nome, "chip": gato.chip, "raca": gato.raca, "vacinas": gato.vacinas} 
-                    self.__tela_animal.mostrar_animal(dados_gato)
-                return gato    
-              
-        if valor_inicial == None:      
-            self.__tela_animal.mostrar_mensagem("Animal não encontrado.")      
+        if chip != None:
+            chip = int(chip)
+
+            for cachorro in self.__cachorro_DAO.get_all():
+                if cachorro.chip == chip:
+                    if valor_inicial == None:
+                        dados_cachorro = {"porte": cachorro.porte, "nome":cachorro.nome, "chip": str(cachorro.chip), "raca": cachorro.raca, "vacinas": cachorro.vacinas} 
+                        self.__tela_animal.exibir_dados_animal(dados_cachorro, "cachorro")
+                    return cachorro
+                
+            for gato in self.__gato_DAO.get_all():
+                if gato.chip == chip:
+                    if valor_inicial == None:    
+                        dados_gato = {"nome":gato.nome, "chip": str(gato.chip), "raca": gato.raca, "vacinas": gato.vacinas} 
+                        self.__tela_animal.exibir_dados_animal(dados_gato, "gato")
+                    return gato    
+                
+            if valor_inicial == None:      
+                self.__tela_animal.mostrar_mensagem("Animal não encontrado.")      
         return None
         
     def alterar_animal(self):
@@ -159,9 +163,9 @@ class ControladorAnimal:
 
             if opcao_escolhida == 5:
                 chip = self.__tela_animal.valida_chip()
-                print()
+                
                 animal = self.buscar_animal(chip)
-                print()
+                
 
                 if animal == None:
                     self.__tela_animal.mostrar_mensagem("Animal não encontrado.")

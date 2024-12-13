@@ -374,13 +374,13 @@ class TelaAnimal:
 
         self.root.mainloop()
 
-    def exibir_dados_adotantes(self, lista_adotantes):
+    def exibir_dados_animais(self, lista_animais):
             self.limpar_tela()
-            titulo = "Lista de Pessoas"
+            titulo = "Lista de Animais"
             tk.Label(self.root, text=titulo, font=("Times New Roman", 16), bg="#fdd9b9").pack(pady=10)
 
             # Criação do Treeview
-            colunas = ("CPF", "Nome", "Data de Nascimento", "Endereço", "Tipo de Habitação", "Tamanho da Habitação", "Possui Animais?")
+            colunas = ("Chip", "Nome", "Raça", "Vacinas")
             tabela = ttk.Treeview(self.root, columns=colunas, show="headings", height=10)
 
             # Configurar cabeçalhos
@@ -388,10 +388,11 @@ class TelaAnimal:
                 tabela.heading(coluna, text=coluna)
 
                 tabela.column(coluna, anchor="center", width=200)
-
+            
             # Adicionar os dados à tabela
-            for pessoa in lista_adotantes:
-                tabela.insert("", "end", values=(pessoa.cpf, pessoa.nome, pessoa.data_nascimento, pessoa.endereco, pessoa.tipo_habitacao, pessoa.tamanho_habitacao, pessoa.possui_animais))
+            for animal in lista_animais:
+                vacinas = ", ".join(vacina.nome for vacina in animal.vacinas) if animal.vacinas else "Nenhuma vacina registrada."
+                tabela.insert("", "end", values=(animal.chip, animal.nome, animal.raca, vacinas))
 
             tabela.pack(pady=10, padx=10)
 
@@ -412,3 +413,61 @@ class TelaAnimal:
             
 
             self.root.mainloop()
+
+
+    def pega_dados_vacina(self):
+        self.limpar_tela()
+        dados = {}
+
+        tk.Label(self.root, text=f"Vacinação", font=("Times New Roman", 16), bg="#fdd9b9").pack(pady=10)
+
+        labels = ["Vacinas"]
+        campos = ["vacinas"]
+
+        for label, campo in zip(labels, campos):
+            tk.Label(self.root, text=label, font=("Times New Roman", 12), bg="#fdd9b9").pack(pady=5)
+
+            vacinas_selecionadas = []    
+            vacinas_disponiveis = ["raiva", "leptospirose", "hepatite infecciosa", "cinomose", "parvovirose", "coronavirose"]
+            for vacina in vacinas_disponiveis:
+                var = tk.BooleanVar()
+                checkbox = tk.Checkbutton(self.root, text=vacina, variable=var)
+                checkbox.pack(pady=3)
+                vacinas_selecionadas.append((vacina, var))
+            dados[campo] = vacinas_selecionadas
+
+        def confirmar():            
+            vacinas_selecionadas_lista = [vacina for vacina, var in vacinas_selecionadas if var.get()]
+       
+            self.opcao_selecionada = vacinas_selecionadas_lista
+            self.root.quit()
+
+        def voltar():
+            for key in dados:
+                dados[key] = None
+            self.opcao_selecionada = None
+            self.root.quit()
+
+        tk.Button(
+            self.root,
+            text="Confirmar",
+            command=confirmar,
+            font=("Times New Roman", 12),
+            bg="#ff7e0e",
+            fg="white"
+        ).pack(pady=20)
+
+        tk.Button(
+            self.root,
+            text="Voltar",
+            command=voltar,
+            font=("Times New Roman", 12),
+            bg="#ff7e0e",
+            fg="white",
+            width=30
+        ).pack(pady=20)
+
+
+        self.root.mainloop()
+        return dados
+        
